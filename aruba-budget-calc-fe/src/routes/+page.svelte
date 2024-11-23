@@ -15,7 +15,7 @@
 					type="text"
 					id="username"
 					name="username"
-					class="focus:border-input mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-indigo-500"
+					class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-input focus:outline-none focus:ring-indigo-500"
 					required
 				/>
 			</div>
@@ -27,7 +27,7 @@
 					type="password"
 					id="password"
 					name="password"
-					class="focus:border-input mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-indigo-500"
+					class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-input focus:outline-none focus:ring-indigo-500"
 					required
 				/>
 			</div>
@@ -43,7 +43,7 @@
 					<label for="remember-me" class="ml-2 block text-sm text-gray-900">Remember me</label>
 				</div>
 				<div class="text-sm">
-					<a href="/" class="text-input font-medium hover:text-indigo-500">Forgot password?</a>
+					<a href="/" class="font-medium text-input hover:text-indigo-500">Forgot password?</a>
 				</div>
 			</div>
 
@@ -51,7 +51,7 @@
 			<div>
 				<button
 					type="submit"
-					class="bg-input flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+					class="flex w-full justify-center rounded-md border border-transparent bg-input px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 				>
 					Sign in
 				</button>
