@@ -1,0 +1,28 @@
+[project]
+name = "team3-api"
+dynamic = ["version"]
+description = ""
+authors = [
+    {name = "NiGia", email = "ningia.coder@gmail.com"},
+]
+dependencies = [
+    "fastapi>=0.104.1",
+    "uvicorn>=0.24.0.post1",
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.scripts]
+api_run = "team3_api.main:main"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm.build]
+includes = ["team3_api"]
+
+[tool.pdm.version]
+source = "file"
+path = "team3_api/__init__.py"
