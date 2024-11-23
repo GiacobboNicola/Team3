@@ -1,0 +1,31 @@
+services:
+  bondy:
+    image: leapsight/bondy:1.0.0-rc.4
+    hostname: wampbus
+    container_name: bondy
+    environment:
+      BONDY_ERL_NODENAME: ${BONDY_ERL_NODENAME-bondy1@127.0.0.1}
+      BONDY_ERL_DISTRIBUTED_COOKIE: ${BONDY_ERL_DISTRIBUTED_COOKIE-bondy}
+    user: "0:1000"
+    ports:
+      # WS/HTTP
+      - "18080:18080"
+      # WS/HTTP Admin
+      - "18081:18081"
+      # TCP
+      - "18082:18082"
+      # HTTPS
+      - "18083:18083"
+      - "18084:18084"
+      - "18085:18085"
+      # Clustering
+      - "18086:18086"
+    volumes:
+      - ./bondy/etc:/bondy/etc
+      - ./bondy/data:/bondy/data
+    networks:
+      - net_team3
+
+networks:
+  net_team3:
+    driver: bridge

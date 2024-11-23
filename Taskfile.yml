@@ -10,7 +10,7 @@ tasks:
       - echo "{{.GREETING}}"
     silent: true
 
-  venv:init:
+  venv:
     desc: "create venv and install mandatory packages"
     cmds:
       - |
@@ -20,6 +20,9 @@ tasks:
           python3 -m venv {{.DIR_ENV}} --prompt team3
         fi
         {{.DIR_ENV}}/bin/pip install -r requirements.txt
+        {{.DIR_ENV}}/bin/pip install -e ./aruba-budget-calc-be/team3-lib
+        {{.DIR_ENV}}/bin/pip install -e ./aruba-budget-calc-be/team3-core
+        {{.DIR_ENV}}/bin/pip install -e ./aruba-budget-calc-be/team3-api
       - task: git:hooks
 
   git:hooks:

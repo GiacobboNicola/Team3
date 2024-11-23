@@ -1,1 +1,9 @@
+# wamp
+generated
+data
+
+# python
 .venv
+
+# frontend
+node_modules
