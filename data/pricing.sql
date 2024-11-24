@@ -33,14 +33,14 @@ CREATE TABLE `pricing` (
   `ReservationPrice` float DEFAULT NULL,
   `TierCategory` varchar(13) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `MinimumUnits4Tier` int DEFAULT NULL,
-  `TierDiscountPerc` int DEFAULT NULL
+  `TierDiscount` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
 -- Dump dei dati per la tabella `pricing`
 --
 
-INSERT INTO `pricing` (`ID`, `ResourceID`, `ResourceName`, `Category`, `Currency`, `UnitOfMeasure`, `UnitPrice`, `FlavorID`, `FlavorName`, `OSPlatform`, `CPU`, `RAM_GB`, `Disk_GB`, `ReservationTerm`, `Reservation Price`, `TierCategory`, `MinimumUnits4Tier`, `TierDiscount`) VALUES
+INSERT INTO `pricing` (`ID`, `ResourceID`, `ResourceName`, `Category`, `Currency`, `UnitOfMeasure`, `UnitPrice`, `FlavorID`, `FlavorName`, `OSPlatform`, `CPU`, `RAM_GB`, `Disk_GB`, `ReservationTerm`, `ReservationPrice`, `TierCategory`, `MinimumUnits4Tier`, `TierDiscount`) VALUES
 (1, 'ff615eba519c49ffbbd8a6e91ccd0765', 'blockdisk', 'disk', 'EUR', '1 Hour', 0.00005, 'N/A', 'N/A', 'N/A', 0, 0, 0, '1 Month', 0.0000475, 'Base', 10, 5),
 (2, 'ff615eba519c49ffbbd8a6e91ccd0765', 'blockdisk', 'disk', 'EUR', '1 Hour', 0.00005, 'N/A', 'N/A', 'N/A', 0, 0, 0, '1 Month', 0.0000475, 'Partner', 50, 10),
 (3, 'ff615eba519c49ffbbd8a6e91ccd0765', 'blockdisk', 'disk', 'EUR', '1 Hour', 0.00005, 'N/A', 'N/A', 'N/A', 0, 0, 0, '1 Month', 0.0000475, 'Premium', 100, 15),
@@ -306,7 +306,7 @@ INSERT INTO `pricing` (`ID`, `ResourceID`, `ResourceName`, `Category`, `Currency
 (263, '6016b250c539443bacf622a592f47d01', 'cloudServer', 'computing', 'EUR', '1 Hour', 0.26, '11a1a4e5ebe7488ea6f8d311b2a89ca3', 'CSO16A64', 'linux', 16, 64, 120, '1 Month', 247, 'Partner', 50, 10),
 (264, '6016b250c539443bacf622a592f47d01', 'cloudServer', 'computing', 'EUR', '1 Hour', 0.26, '11a1a4e5ebe7488ea6f8d311b2a89ca3', 'CSO16A64', 'linux', 16, 64, 120, '1 Month', 247, 'Premium', 100, 15),
 (265, '6016b250c539443bacf622a592f47d01', 'cloudServer', 'computing', 'EUR', '1 Hour', 0.26, '11a1a4e5ebe7488ea6f8d311b2a89ca3', 'CSO16A64', 'linux', 16, 64, 120, '1 Year', 234, 'Base', 10, 5);
-INSERT INTO `pricing` (`ID`, `ResourceID`, `ResourceName`, `Category`, `Currency`, `UnitOfMeasure`, `UnitPrice`, `FlavorID`, `FlavorName`, `OSPlatform`, `CPU`, `RAM_GB`, `Disk_GB`, `ReservationTerm`, `Reservation Price`, `TierCategory`, `MinimumUnits4Tier`, `TierDiscount`) VALUES
+INSERT INTO `pricing` (`ID`, `ResourceID`, `ResourceName`, `Category`, `Currency`, `UnitOfMeasure`, `UnitPrice`, `FlavorID`, `FlavorName`, `OSPlatform`, `CPU`, `RAM_GB`, `Disk_GB`, `ReservationTerm`, `ReservationPrice`, `TierCategory`, `MinimumUnits4Tier`, `TierDiscount`) VALUES
 (266, '6016b250c539443bacf622a592f47d01', 'cloudServer', 'computing', 'EUR', '1 Hour', 0.26, '11a1a4e5ebe7488ea6f8d311b2a89ca3', 'CSO16A64', 'linux', 16, 64, 120, '1 Year', 234, 'Partner', 50, 10),
 (267, '6016b250c539443bacf622a592f47d01', 'cloudServer', 'computing', 'EUR', '1 Hour', 0.26, '11a1a4e5ebe7488ea6f8d311b2a89ca3', 'CSO16A64', 'linux', 16, 64, 120, '1 Year', 234, 'Premium', 100, 15),
 (268, '6016b250c539443bacf622a592f47d01', 'cloudServer', 'computing', 'EUR', '1 Hour', 0.26, '11a1a4e5ebe7488ea6f8d311b2a89ca3', 'CSO16A64', 'linux', 16, 64, 120, '3 Years', 208, 'Base', 10, 5),
