@@ -1,0 +1,215 @@
+[
+  {
+    "uri": "com.leapsight.bondy",
+    "authmethods": ["wampcra", "ticket", "anonymous"],
+    "security_enabled": true,
+    "users": [],
+    "groups": [
+      {
+        "name": "administrators",
+        "groups": [],
+        "meta": {
+          "description": "The administrators of Bondy."
+        }
+      }
+    ],
+    "sources": [
+      {
+        "usernames": "all",
+        "authmethod": "password",
+        "cidr": "0.0.0.0/0",
+        "meta": {
+          "description": "Allows all users from any network authenticate using password credentials."
+        }
+      },
+      {
+        "usernames": ["anonymous"],
+        "authmethod": "anonymous",
+        "cidr": "0.0.0.0/0",
+        "meta": {
+          "description": "Allows all users from any network authenticate as anonymous."
+        }
+      }
+    ],
+    "grants": [
+      {
+        "permissions": [
+          "wamp.subscribe",
+          "wamp.unsubscribe",
+          "wamp.call",
+          "wamp.cancel",
+          "wamp.publish"
+        ],
+        "uri": "*",
+        "roles": "all"
+      },
+      {
+        "permissions": [
+          "wamp.subscribe",
+          "wamp.unsubscribe",
+          "wamp.call",
+          "wamp.cancel",
+          "wamp.publish"
+        ],
+        "uri": "*",
+        "roles": ["anonymous"]
+      }
+    ]
+  },
+  {
+    "uri": "com.team3.demo",
+    "description": "team3 Demo realm",
+    "authmethods": [
+      "cryptosign",
+      "wampcra",
+      "ticket",
+      "trust",
+      "anonymous",
+      "oauth2",
+      "password"
+    ],
+    "security_enabled": true,
+    "private_keys": [],
+    "users": [],
+    "groups": [
+      {
+        "name": "administrators",
+        "groups": [],
+        "meta": {
+          "description": "The administrator of this realm.",
+          "notes": "We use this group to assign grants as we have the default `admin` user (defined by Bondy) and also the `admin` group and the security system cannot add grants when there is ambiguity."
+        }
+      },
+      {
+        "name": "admin",
+        "groups": ["administrators"],
+        "meta": {
+          "description": "The administrator of Clark's Hackathon."
+        }
+      },
+      {
+        "name": "resource_owners",
+        "groups": [],
+        "meta": {
+          "description": "OAuth2 Resource Owners. An entity capable of authorizing access to a protected resource."
+        }
+      },
+      {
+        "name": "api_clients",
+        "groups": [],
+        "meta": {
+          "description": "OAuth2 confidential client. A third-party application that wants access to the private resources of the Resource Owner. The OAuth client can make protected resource requests on behalf of the Resource Owner after the latter grants it authorization."
+        }
+      }
+    ],
+    "sources": [
+      {
+        "usernames": "all",
+        "authmethod": "password",
+        "cidr": "0.0.0.0/0",
+        "meta": {
+          "description": "Allows all users from any network authenticate using password authentication method."
+        }
+      },
+      {
+        "usernames": "all",
+        "authmethod": "oauth2",
+        "cidr": "0.0.0.0/0",
+        "meta": {
+          "description": "Allows all users from any network authenticate using password credentials. This covers OAuth2 Client Credentials and Resource Owner Password flows."
+        }
+      },
+      {
+        "usernames": "all",
+        "authmethod": "ticket",
+        "cidr": "0.0.0.0/0",
+        "meta": {
+          "description": "Allows all users from any network authenticate using ticket authentication method."
+        }
+      },
+      {
+        "usernames": ["anonymous"],
+        "authmethod": "anonymous",
+        "cidr": "0.0.0.0/0",
+        "meta": {
+          "description": "Allows all users from any network authenticate as anonymous.",
+          "notes": "This is required for those WAMP client libraries that do not know how to authenticate."
+        }
+      },
+      {
+        "usernames": "all",
+        "authmethod": "trust",
+        "cidr": "0.0.0.0/0",
+        "meta": {
+          "description": "Allows all internal users from private subnet to authenticate using trust authentication method."
+        }
+      },
+      {
+        "usernames": "all",
+        "authmethod": "wampcra",
+        "cidr": "0.0.0.0/0",
+        "meta": {
+          "description": "Allows all users from any network authenticate using wampcra authentication method."
+        }
+      },
+      {
+        "usernames": "all",
+        "authmethod": "cryptosign",
+        "cidr": "0.0.0.0/0",
+        "meta": {
+          "description": "Allows all users from any network authenticate using cryptosign authentication method."
+        }
+      }
+    ],
+    "grants": [
+      {
+        "permissions": [
+          "wamp.register",
+          "wamp.unregister",
+          "wamp.subscribe",
+          "wamp.unsubscribe",
+          "wamp.call",
+          "wamp.cancel",
+          "wamp.publish"
+        ],
+        "uri": "*",
+        "roles": ["administrators"]
+      },
+      {
+        "permissions": [
+          "wamp.subscribe",
+          "wamp.unsubscribe",
+          "wamp.call",
+          "wamp.cancel",
+          "wamp.publish"
+        ],
+        "uri": "*",
+        "roles": ["api_clients"]
+      },
+      {
+        "permissions": [
+          "wamp.subscribe",
+          "wamp.unsubscribe",
+          "wamp.call",
+          "wamp.cancel",
+          "wamp.publish"
+        ],
+        "uri": "*",
+        "roles": ["resource_owners"]
+      },
+      {
+        "permissions": [
+          "wamp.register",
+          "wamp.unregister",
+          "wamp.subscribe",
+          "wamp.unsubscribe",
+          "wamp.call",
+          "wamp.cancel",
+          "wamp.publish"
+        ],
+        "uri": "*",
+        "roles": ["anonymous"]
+      }
+    ]
+  }
+]
