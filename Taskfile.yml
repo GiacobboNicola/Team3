@@ -11,8 +11,13 @@ tasks:
       - echo "{{.GREETING}}"
     silent: true
 
+  be:test:
+    desc: start the backend envirionment
+    cmds:
+      - docker compose up bondy api core test
+
   venv:
-    desc: "create venv and install mandatory packages"
+    desc: create venv and install mandatory packages
     cmds:
       - |
         if [ -d  $DIR_ENV ]; then
@@ -27,6 +32,6 @@ tasks:
       - task: git:hooks
 
   git:hooks:
-    desc: "install pre-commit"
+    desc: install pre-commit
     cmds:
       - "$DIR_ENV/bin/pre-commit install --hook-type pre-commit --hook-type pre-merge-commit --hook-type post-merge"

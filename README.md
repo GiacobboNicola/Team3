@@ -76,9 +76,13 @@ The following environment variables are supported:
 Run tests using:
 
 ```bash
-docker compose up api core test bondy pytest
+docker compose up api core test bondy
+# or with Taskfile
+task be:test
 ```
 
+After a while, if everything works fine, you should see the ping message like the following:
+![Test bus wamp](docs/test_aruba.png)
 > To be implemented:
 
 ```bash
