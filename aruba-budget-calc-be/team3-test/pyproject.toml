@@ -1,0 +1,25 @@
+[project]
+name = "team3-test"
+dynamic = ["version"]
+description = ""
+authors = [
+    {name = "NiGia", email = "nicola.giacobbo@csgalileo.net"},
+]
+dependencies = []
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.scripts]
+test_run = "team3_test.main:main"
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+[tool.pdm.build]
+includes = ["team3_test"]
+
+[tool.pdm.version]
+source = "file"
+path = "team3_test/__init__.py"

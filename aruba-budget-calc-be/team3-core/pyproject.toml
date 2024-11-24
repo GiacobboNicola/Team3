@@ -13,7 +13,7 @@ license = {text = "MIT"}
 
 [project.scripts]
 core_run = "team3_core.main:main"
-core_create_tables = "team3_core.main:create_tables"
+#core_create_tables = "team3_core.main:create_tables"
 
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]

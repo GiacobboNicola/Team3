@@ -51,6 +51,21 @@ services:
     networks:
       - net_team3
 
+  test:
+    image: team3/test
+    restart: unless-stopped
+    build:
+      context: aruba-budget-calc-be
+      target: test
+      args:
+        - ENV=${ENV}
+    command: "test_run --debug --ws=$WS --realm=$REALM"
+    volumes:
+      - ./aruba-budget-calc-be/team3-test/team3_test:/app/pkgs/lib/team3_test
+      - ./aruba-budget-calc-be/team3_lib:/app/pkgs/lib/team3_lib
+    networks:
+      net_team3:
+
   # db:
   #   image: postgres:15.0-alpine
   #   command:
