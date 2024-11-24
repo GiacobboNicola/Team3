@@ -1,0 +1,6 @@
+{
+    "computing": "https://catalog.r1-it.storage.cloud.it/catalog_computing.json?time=638658864045684959",
+    "container": "https://catalog.r1-it.storage.cloud.it/catalog_container.json?time=638658864243742192",
+    "networking": "https://catalog.r1-it.storage.cloud.it/catalog_networking.json?time=638658864438361329",
+    "storage": "https://catalog.r1-it.storage.cloud.it/catalog_storage.json?time=638658864736088128"
+}
