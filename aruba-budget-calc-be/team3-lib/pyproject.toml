@@ -1,28 +1,32 @@
 [project]
-name = "team3-api"
+name = "team3-lib"
 dynamic = ["version"]
 description = ""
 authors = [
     {name = "NiGia", email = "ningia.coder@gmail.com"},
 ]
 dependencies = [
-    "fastapi>=0.104.1",
-    "uvicorn>=0.24.0.post1",
+    "autobahn[asyncio,encryption,serialization]==23.6.2",
+    "configargparse>=1.7",
+    "pydantic>=2.5.1",
+    "jurigged>=0.5.6",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
 license = {text = "MIT"}
 
-[tool.pdm.version]
-source = "file"
-path = "team3_api/__init__.py"
-
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
 
-[project.scripts]
-api_run = "team3_api.main:main"
-
 [tool.pdm.build]
-includes = ["team3_api"]
+includes = ["team3_lib"]
+
+[tool.pdm.version]
+source = "file"
+path = "team3_lib/__init__.py"
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "jurigged>=0.5.6",
+]

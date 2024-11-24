@@ -4,6 +4,7 @@ data
 
 # python
 .venv
+.ruff_cache
 
 # frontend
 node_modules

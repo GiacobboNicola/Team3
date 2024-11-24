@@ -31,7 +31,7 @@ FROM runtime AS pdm
 
 # install PDM and configure pdm in PEP 582 mode (__pypackages__)
 RUN pip install -U pip setuptools wheel
-RUN pip install pdm
+RUN pip install pdm pdm-pep517
 RUN pdm config python.use_venv false
 
 
