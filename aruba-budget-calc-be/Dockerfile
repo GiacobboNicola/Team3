@@ -31,7 +31,7 @@ FROM runtime AS pdm
 
 # install PDM and configure pdm in PEP 582 mode (__pypackages__)
 RUN pip install -U pip setuptools wheel
-RUN pip install pdm
+RUN pip install pdm pdm-pep517
 RUN pdm config python.use_venv false
 
 
@@ -47,6 +47,7 @@ RUN pdm install --prod --no-lock --no-editable --no-isolation
 RUN if [ "$ENV" = "development" ]; then \
    pdm install --dev --no-lock --no-editable ; fi
 
+
 #==== stage core-lib ====
 FROM pdm AS core-lib
 
@@ -57,6 +58,7 @@ RUN pdm install --prod --no-lock --no-editable --no-isolation
 # install development env
 RUN if [ "$ENV" = "development" ]; then \
    pdm install --dev --no-lock --no-editable ; fi
+
 
 #==== stage core ====
 FROM runtime AS core
@@ -73,7 +75,8 @@ ENV PATH=/app/pkgs/bin:$PATH
 # switch to a not-root user
 USER app
 
-#==== test lib ====
+
+#==== stage api-lib ====
 FROM pdm AS api-lib
 
 WORKDIR /project
@@ -83,6 +86,7 @@ RUN pdm install --prod --no-lock --no-editable --no-isolation
 # install development env
 RUN if [ "$ENV" = "development" ]; then \
   pdm install --dev --no-lock --no-editable ; fi
+
 
 #==== stage api ====
 FROM runtime AS api
@@ -94,6 +98,34 @@ COPY ./team3-api/team3_api ./team3_api
 # copy pkgs folder with lib, bin, etc
 COPY --from=lib /project/__pypackages__/3* /app/pkgs
 COPY --from=api-lib /project/__pypackages__/3* /app/pkgs
+ENV PYTHONPATH=/app/pkgs/lib:/app:$PYTHONPATH
+ENV PATH=/app/pkgs/bin:$PATH
+# switch to a not-root user
+USER app
+
+
+#==== stage test-lib ====
+FROM pdm AS test-lib
+
+WORKDIR /project
+COPY ./team3-test/team3_test ./team3_test
+COPY ./team3-test/pyproject.toml team3-test/pdm.lock team3-test/README.md ./
+RUN pdm install --prod --no-lock --no-editable --no-isolation
+# install development env
+RUN if [ "$ENV" = "development" ]; then \
+  pdm install --dev --no-lock --no-editable ; fi
+
+
+#==== stage test ====
+FROM runtime AS test
+
+# copy modules
+WORKDIR /app
+COPY ./team3-lib/team3_lib ./team3_lib
+COPY ./team3-test/team3_test ./team3_test
+# copy pkgs folder with lib, bin, etc
+COPY --from=lib /project/__pypackages__/3* /app/pkgs
+COPY --from=test-lib /project/__pypackages__/3* /app/pkgs
 ENV PYTHONPATH=/app/pkgs/lib:/app:$PYTHONPATH
 ENV PATH=/app/pkgs/bin:$PATH
 # switch to a not-root user
