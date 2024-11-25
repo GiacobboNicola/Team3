@@ -29,7 +29,21 @@ class CoreService(WampComponent):
         # register(s)
         await self.register(self.ping, "ping")
         await self.register(self.get_pricing, "get_pricing")
-
+        await self.register(self.auth_web_login, "auth_web_login")
+        await self.register(self.generate_api_key, "generate_api_key")
+        await self.register(self.get_client_credentials_access_token, "get_client_credentials_access_token")
+        # await self.register(self.create_project, "create_project")
+        # await self.register(self.create_vpc, "create_vpc")
+        # await self.register(self.create_subnet, "create_subnet")
+        # await self.register(self.create_security_group, "create_security_group")
+        # await self.register(self.create_security_rules, "create_security_rules")
+        # await self.register(self.create_elastic_ip, "create_elastic_ip")
+        # await self.register(self.create_kaas, "create_kaas")
+        # await self.register(self.create_key_pair, "create_key_pair")
+        # await self.register(self.create_cloud_server, "create_cloud_server")
+        # await self.register(self.create_cloud_server_ubuntu, "create_cloud_server_ubuntu")
+        # await self.register(self.create_block_storage, "create_block_storage")
+        await self.register(self.deploy_resource, "deploy_resource")
 
         # subscription(s)
         self.subscribe(self.show_ping, "test.ping")
@@ -150,6 +164,482 @@ class CoreService(WampComponent):
         #         log.error(f"Error: {response.status_code}")
 
         return prices
+
+
+    async def auth_web_login(realm:str, client_id:str, client_secret:str, username:str, password:str):
+
+        url = f"login.aruba.it/auth/realms/{realm}/protocol/openid-connect/token"
+
+        payload = f'client_id={client_id}&client_secret={client_secret}&username={username}&password={password}&grant_type=password'
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': '••••••'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def generate_api_key(ingress_url:str, web_auth_token:str):
+
+        url = f"{ingress_url}/profile/api/v1/apikeys"
+
+        payload = json.dumps({
+            "name": "aruba-iac2",
+            "tags": [
+                "string"
+            ]
+        })
+        headers = {
+            'accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def get_client_credentials_access_token(client_id:str, client_secret:str):
+
+        url = "login.aruba.it/auth/realms/cmp-new-apikey/protocol/openid-connect/token"
+
+        payload = f'grant_type=client_credentials&client_id={client_id}&client_secret={client_secret}'
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def create_project(api_gateway:str, web_auth_token:str, project_name:str):
+
+        url = f"{api_gateway}/projects"
+
+        payload = json.dumps({
+            "metadata": {
+                "name": project_name,
+                "tags": [
+                "string"
+                ]
+            },
+            "properties": {
+                "description": "string",
+                "default": False
+            }
+        })
+        headers = {
+            'accept': '*/*',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def create_vpc(api_gateway:str, project_id:str, web_auth_token:str, vpc_name:str):
+
+        url = "{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs"
+
+        payload = json.dumps({
+            "metadata": {
+                "name": vpc_name,
+                "tags": [
+                    "tag-1",
+                    "tag-2"
+                ],
+                "location": {
+                    "value": "ITBG-Bergamo"
+                }
+            }
+        })
+        headers = {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+    
+        return response.text
+
+
+    async def create_subnet(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, subnet_name:str):
+
+        url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}/subnets"
+
+        payload = json.dumps({
+            "metadata": {
+                "name": subnet_name,
+                "tags": [
+                    "tag-1",
+                    "tag-2"
+                ]
+            },
+            "properties": {
+                "type": "Advanced",
+                "default": True,
+                "network": {
+                    "address": "192.168.1.0/25"
+                },
+                "dhcp": {
+                    "enabled": True
+                }
+            }
+        })
+        headers = {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def create_security_group(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, security_group_name:str):
+        
+        url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}/securityGroups"
+
+        payload = json.dumps({
+            "metadata": {
+                "name": security_group_name,
+                "tags": [
+                    "tag-1",
+                    "tag-2"
+                ],
+                "location": {
+                    "value": "ITBG-Bergamo"
+                }
+            },
+            "properties": {
+                "default": False
+            }
+        })
+        headers = {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def create_security_rules(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, security_group_id:str, security_rules_name:str):
+
+        url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}/securityGroups/{security_group_id}/securityRules"
+
+        payload = json.dumps({
+            "metadata": {
+                "name": security_rules_name
+            },
+            "properties": {
+                "protocol": "TCP",
+                "port": "80-90",
+                "direction": "Egress",
+                "target": {
+                    "kind": "Ip",
+                    "value": "0.0.0.0/0"
+                }
+            }
+        })
+        headers = {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def create_elastic_ip(api_gateway:str, project_id:str, web_auth_token:str, elastic_ip_name:str):
+
+        url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/elasticIps"
+
+        payload = json.dumps({
+            "metadata": {
+                "name": elastic_ip_name,
+                "tags": [
+                    "tag-1",
+                    "tag-2"
+                ],
+                "location": {
+                    "value": "ITBG-Bergamo"
+                }
+            },
+            "properties": {
+                "billingPlan": {
+                    "billingPeriod": "Hour"
+                }
+            }
+        })
+        headers = {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def create_kaas(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, subnet_id:str, kaas_name:str):
+
+        url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Container/kaas"
+
+        payload = json.dumps({
+            "metadata": {
+                "name": kaas_name,
+                "location": {
+                    "value": "ITBG-Bergamo"
+                },
+                "tags": [
+                    "tag1"
+                ]
+            },
+            "properties": {
+                "preset": False,
+                "vpc": {
+                    "uri": f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}"
+                },
+                "kubernetesVersion": {
+                    "value": "1.29.2"
+                },
+                "subnet": {
+                    "uri": f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}/subnets/{subnet_id}"
+                },
+                "nodeCidr": {
+                    "address": "192.168.59.0/25",
+                    "name": "kaas-test-cidr"
+                },
+                "securityGroup": {
+                    "name": "kaas-test-sg"
+                },
+                "nodePools": [
+                    {
+                        "name": "nd-1",
+                        "nodes": 1,
+                        "instance": "K2A4",
+                        "dataCenter": "ITBG-1"
+                    }
+                ],
+                "ha": False,
+                "billingPlan": {
+                    "billingPeriod": "Hour"
+                }
+            }
+        })
+        headers = {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def create_key_pair(api_gateway:str, project_id:str, web_auth_token:str, key_pair_name:str):
+
+        url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Compute/keyPairs"
+
+        payload = json.dumps({
+            "metadata": {
+                "name": key_pair_name,
+                "location": {
+                    "value": "ITBG-Bergamo"
+                },
+                "tags": [
+                    "tag-1"
+                ]
+            },
+            "properties": {
+                "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC6JqByfkVm64u7emAJMmHx3gNTuorCn/RmLvozgz67MWUCygTtcRHBBS8WAANkSRLCN/r/VDGFBB5N9PzK5V5ONE/VSFGD63V861vu8mslpNHtL6gN2y1mqDzl3vi0ebZv2t6ArsdFKPx1gqsP6kavIAos7ZFgbJsmRNO2V71dK+YPeubxpMPezVBrMxDSLmA0In6z3foFTGB7iZDnQ2Yj0u/Kukf7SfPgaWaegSu/yQVDG+wLQ84d6ti6vdRyjauGvqQjdYldcvdjoG7OlAxC/TRCdwFeq4u6p73IVZoz9Xq99smnOtLu7qGCzW6g/+RNHSPSpz9+R6AKGjUPPFj29+WKJRnesdnb6rRmTyUDsezuu8z/rbthlgDYI3GaT+Sauap9lwuoVcSKKCt1GvMUC180csxVGAMz3MPN0X+pvbAqjNJmGt5lMaRrZ4BROL+PI3PDTTEPniOW+8doQEWZUA3HPthwneQ3emuqGSL3i1W5uJgSvTbAv+nXnrDK2qk="
+            }
+        })
+        headers = {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def create_cloud_server(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, subnet_id:str, security_group_id:str, cloud_server_name:str):
+
+        url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Compute/cloudServers"
+
+        payload = json.dumps({
+            "metadata": {
+                "name": cloud_server_name,
+                "location": {
+                    "value": "ITBG-Bergamo"
+                },
+                "tags": [
+                    "tag-1"
+                ]
+            },
+            "properties": {
+                "dataCenter": "ITBG-1",
+                "vpc": {
+                    "uri": f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}"
+                },
+                "vpcPreset": False,
+                "flavorId": "b5052a43-60d0-4041-9d5d-448d30c48f0c",
+                "template": {
+                    "uri": f"{api_gateway}/providers/Aruba.Compute/templates/65f42d72d82fd1d45ce03b0a"
+                },
+                "addElasticIp": False,
+                "initialPassword": "Aruba2024!",
+                "subnets": [
+                    {
+                        "uri": f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}/subnets/{subnet_id}"
+                    }
+                ],
+                "securityGroups": [
+                    {
+                        "uri": f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}/securityGroups/{security_group_id}"
+                    }
+                ]
+            }
+        })
+        headers = {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def create_cloud_server_ubuntu(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, subnet_id:str, security_group_id:str, key_pair_id:str, cloud_server_name:str):
+
+        url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Compute/cloudServers"
+
+        payload = json.dumps({
+            "metadata": {
+                "name": cloud_server_name,
+                "location": {
+                "value": "ITBG-Bergamo"
+                },
+                "tags": [
+                "tag-1"
+                ]
+            },
+            "properties": {
+                "dataCenter": "ITBG-1",
+                "vpc": {
+                    "uri": f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}"
+                },
+                "vpcPreset": False,
+                "flavorId": "ee8e150d-9c47-4d0d-a4f5-34c6166051ed",
+                "template": {
+                    "uri": "/providers/Aruba.Compute/templates/66045544b146b450ddb90975"
+                },
+                "addElasticIp": False,
+                # "elasticIp": {
+                #     "uri": "string"
+                # },
+                "keyPair": {
+                    "uri": f"{api_gateway}/projects/66dac1a6e04c9f5102df7719/providers/Aruba.Compute/keyPairs/{key_pair_id}"
+                },
+                "initialPassword": "Aruba2024!",
+                "subnets": [
+                    {
+                        "uri": f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}/subnets/{subnet_id}"
+                    }
+                ],
+                "securityGroups": [
+                    {
+                        "uri": f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}/securityGroups/{security_group_id}"
+                    }
+                ]
+                # "volumes": [
+                #     {
+                #         "uri": f"/projects/{{projectIdCreated}}/providers/Aruba.Storage/vpcs/{{vpcIdCreated}}/blockStorages/{{volumeIdCreated}}" 
+                #     }
+                # ]
+            }
+        })
+        headers = {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def create_block_storage(api_gateway:str, project_id:str, web_auth_token:str, block_storage_name:str):
+
+        url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Storage/blockStorages"
+
+        payload = json.dumps({
+            "metadata": {
+                "name": block_storage_name,
+                "location": {
+                    "value": "ITBG-Bergamo"
+                },
+                "tags": [
+                    "tag-1"
+                ]
+            },
+            "properties": {
+                "sizeGb": 10,
+                "billingPeriod": "Hour",
+                "dataCenter": "ITBG-1"
+            }
+        })
+        headers = {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {web_auth_token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        return response.text
+
+
+    async def deploy_resource(resources_to_deploy:dict) -> dict:
+        """
+        Returns a flattened json containing outcomes of Aruba cloud resources deployment.
+
+        Args:
+            resources_to_deploy (dict): Dict containing resources to deploy.
+
+        Returns:
+            dict: Dict containing deployment outcomes.
+        """
+
+        ### TODO: to implement...
+        temp = {}
+
+
+        return temp
+
+
+
 
     async def show_ping(self, ping=None):
         log.info(f"from test->core: {ping}")
