@@ -43,6 +43,9 @@ class ApiService(WampComponent):
 
         # Add endpoints
         self.http.add_api_route(f"{prefix}/ping", endpoint=self.ping)
+        self.http.add_api_route(f"{prefix}/pricing", endpoint=self.ping) # to modify with "call_pricing"
+        self.http.add_api_route(f"{prefix}/deploy", endpoint=self.ping) # to modify with "call_deploy"
+
         # self.http.add_api_route(
         #     "/{full_path:path}", endpoint=self.preflight_handler, methods=["OPTIONS"]
         # )
@@ -62,6 +65,31 @@ class ApiService(WampComponent):
         """Tests ping rpc"""
         response = await self.call("ping")
         return {"message": response}
+
+    async def call_pricing(self,
+            resource_type_list: list=["computing", "container", "networking", "storage"]
+        ):
+        """Get prices from catalog and returns json"""
+
+        response = await self.call(
+            "get_pricing",
+            resource_type_list
+        )
+    
+        return response # {"message": response}
+    
+    async def call_deploy(self,
+            resource_to_deploy: list=[{}]
+        ):
+        """Deploys resources and returns job outcomes"""
+
+        response = await self.call(
+            "deploy_resources",
+            resource_to_deploy
+        )
+
+        return response
+
 
     # async def get_user(self, id_user: UUID4):
     #     """Get user by id"""
