@@ -32,18 +32,18 @@ class CoreService(WampComponent):
         await self.register(self.auth_web_login, "auth_web_login")
         await self.register(self.generate_api_key, "generate_api_key")
         await self.register(self.get_client_credentials_access_token, "get_client_credentials_access_token")
-        # await self.register(self.create_project, "create_project")
-        # await self.register(self.create_vpc, "create_vpc")
-        # await self.register(self.create_subnet, "create_subnet")
-        # await self.register(self.create_security_group, "create_security_group")
-        # await self.register(self.create_security_rules, "create_security_rules")
-        # await self.register(self.create_elastic_ip, "create_elastic_ip")
-        # await self.register(self.create_kaas, "create_kaas")
-        # await self.register(self.create_key_pair, "create_key_pair")
-        # await self.register(self.create_cloud_server, "create_cloud_server")
-        # await self.register(self.create_cloud_server_ubuntu, "create_cloud_server_ubuntu")
-        # await self.register(self.create_block_storage, "create_block_storage")
-        await self.register(self.deploy_resource, "deploy_resource")
+        await self.register(self.create_project, "create_project")
+        await self.register(self.create_vpc, "create_vpc")
+        await self.register(self.create_subnet, "create_subnet")
+        await self.register(self.create_security_group, "create_security_group")
+        await self.register(self.create_security_rules, "create_security_rules")
+        await self.register(self.create_elastic_ip, "create_elastic_ip")
+        await self.register(self.create_kaas, "create_kaas")
+        await self.register(self.create_key_pair, "create_key_pair")
+        await self.register(self.create_cloud_server, "create_cloud_server")
+        await self.register(self.create_cloud_server_ubuntu, "create_cloud_server_ubuntu")
+        await self.register(self.create_block_storage, "create_block_storage")
+        await self.register(self.deploy_resources, "deploy_resources")
 
         # subscription(s)
         self.subscribe(self.show_ping, "test.ping")
@@ -55,7 +55,9 @@ class CoreService(WampComponent):
         return {"message": "pong", "time": time.time()}
 
 
-    async def get_pricing(resource_type_list:list) -> dict:
+    async def get_pricing(self,
+            resource_type_list:list
+        ) -> dict:
         """
         Returns a flattened json containing pricing of Aruba cloud resources.
         In case a resource type is specified, data get extracted only for that resource.
@@ -71,102 +73,108 @@ class CoreService(WampComponent):
         # Initialize empty dict to be filled iteratively
         prices = {}
 
-        # # Get data for each separate url, convert into dataframe and append
-        # for resource_type, pricing_url in PRICING_ENDPOINTS.items():
+        # Get data for each separate url, convert into dataframe and append
+        for resource_type, pricing_url in PRICING_ENDPOINTS.items():
 
-        #     # Get pricing only for resources specified in input list
-        #     if resource_type not in resource_type_list:
-        #         continue
+            # Get pricing only for resources specified in input list
+            if resource_type not in resource_type_list:
+                continue
 
-        #     # Request pricing catalog
-        #     response = requests.get(pricing_url)
+            # Request pricing catalog
+            response = requests.get(pricing_url)
 
-        #     # Check request status
-        #     if response.status_code == 200:
+            # Check request status
+            if response.status_code == 200:
                 
-        #         log.info(f"{resource_type} - getting data...")
+                log.info(f"{resource_type} - getting data...")
                 
-        #         # Convert output to dictionary
-        #         data = response.json()
+                # Convert output to dictionary
+                data = response.json()
 
-        #         log.info(f"{resource_type} - parsing data...")
+                log.info(f"{resource_type} - parsing data...")
                 
-        #         # Ensure the input is a list of items
-        #         if not isinstance(data, list):
-        #             log.warning("Warning: Provided JSON catalog is not a list. Returning an empty DataFrame.")
-        #             return prices
+                # Ensure the input is a list of items
+                if not isinstance(data, list):
+                    log.warning("Warning: Provided JSON catalog is not a list. Returning an empty DataFrame.")
+                    return prices
 
-        #         # Iterate over each item in the JSON to extract details
-        #         for item in data:
-        #             if not isinstance(item, dict):
-        #                 continue  # Skip non-dictionary entries
+                # Iterate over each item in the JSON to extract details
+                for item in data:
+                    if not isinstance(item, dict):
+                        continue  # Skip non-dictionary entries
 
-        #             # Basic resource information, with default values
-        #             base_info = {
-        #                 "Resource ID": item.get("_id", "Unknown"),
-        #                 "Resource Name": item.get("resourceName", "Unknown"),
-        #                 "Category": item.get("resourceCategory", "Unknown"),
-        #                 "Currency": item.get("currencyCode", "Unknown"),
-        #                 "Unit of Measure": item.get("unitOfMeasure", "Unknown"),
-        #                 "Unit Price": item.get("unitPrice", 0.0)
-        #             }
+                    # Basic resource information, with default values
+                    base_info = {
+                        "Resource ID": item.get("_id", "Unknown"),
+                        "Resource Name": item.get("resourceName", "Unknown"),
+                        "Category": item.get("resourceCategory", "Unknown"),
+                        "Currency": item.get("currencyCode", "Unknown"),
+                        "Unit of Measure": item.get("unitOfMeasure", "Unknown"),
+                        "Unit Price": item.get("unitPrice", 0.0)
+                    }
                     
-        #             # Flavor specifications with default values, checking if 'flavor' exists and is a dictionary
-        #             flavor = item.get("flavor", {})
-        #             if not isinstance(flavor, dict):
-        #                 flavor = {}  # Reset to an empty dict if 'flavor' is None or not a dictionary
+                    # Flavor specifications with default values, checking if 'flavor' exists and is a dictionary
+                    flavor = item.get("flavor", {})
+                    if not isinstance(flavor, dict):
+                        flavor = {}  # Reset to an empty dict if 'flavor' is None or not a dictionary
                     
-        #             flavor_info = {
-        #                 "Flavor ID": flavor.get("id", "N/A"),
-        #                 "Flavor Name": flavor.get("name", "N/A"),
-        #                 "OS Platform": flavor.get("osPlatform", "N/A"),
-        #                 "CPU": flavor.get("cpu", "N/A"),
-        #                 "RAM (GB)": flavor.get("ram", "N/A"),
-        #                 "Disk (GB)": flavor.get("disk", "N/A")
-        #             }
+                    flavor_info = {
+                        "Flavor ID": flavor.get("id", "N/A"),
+                        "Flavor Name": flavor.get("name", "N/A"),
+                        "OS Platform": flavor.get("osPlatform", "N/A"),
+                        "CPU": flavor.get("cpu", "N/A"),
+                        "RAM (GB)": flavor.get("ram", "N/A"),
+                        "Disk (GB)": flavor.get("disk", "N/A")
+                    }
                     
-        #             # Process each reservation term and price, handling missing or non-list 'reservations'
-        #             reservations = item.get("reservations", [])
-        #             if not isinstance(reservations, list) or not reservations:
-        #                 reservations = [{"term": "N/A", "price": 0.0}]
+                    # Process each reservation term and price, handling missing or non-list 'reservations'
+                    reservations = item.get("reservations", [])
+                    if not isinstance(reservations, list) or not reservations:
+                        reservations = [{"term": "N/A", "price": 0.0}]
                     
-        #             for reservation in reservations:
-        #                 if not isinstance(reservation, dict):
-        #                     reservation = {}  # Reset to an empty dict if not a dictionary
+                    for reservation in reservations:
+                        if not isinstance(reservation, dict):
+                            reservation = {}  # Reset to an empty dict if not a dictionary
 
-        #                 reservation_info = {
-        #                     "Reservation Term": reservation.get("term", "N/A"),
-        #                     "Reservation Price": reservation.get("price", 0.0)
-        #                 }
+                        reservation_info = {
+                            "Reservation Term": reservation.get("term", "N/A"),
+                            "Reservation Price": reservation.get("price", 0.0)
+                        }
                         
-        #                 # Process each tier category and discount, handling missing or non-list 'tiers'
-        #                 tiers = item.get("tiers", [])
-        #                 if not isinstance(tiers, list) or not tiers:
-        #                     tiers = [{"category": "N/A", "minimumUnits": 0, "percentDiscount": 0.0}]
+                        # Process each tier category and discount, handling missing or non-list 'tiers'
+                        tiers = item.get("tiers", [])
+                        if not isinstance(tiers, list) or not tiers:
+                            tiers = [{"category": "N/A", "minimumUnits": 0, "percentDiscount": 0.0}]
                         
-        #                 for tier in tiers:
-        #                     if not isinstance(tier, dict):
-        #                         tier = {}  # Reset to an empty dict if not a dictionary
+                        for tier in tiers:
+                            if not isinstance(tier, dict):
+                                tier = {}  # Reset to an empty dict if not a dictionary
                             
-        #                     tier_info = {
-        #                         "Tier Category": tier.get("category", "N/A"),
-        #                         "Minimum Units for Tier": tier.get("minimumUnits", 0),
-        #                         "Tier Discount (%)": tier.get("percentDiscount", 0.0)
-        #                     }
+                            tier_info = {
+                                "Tier Category": tier.get("category", "N/A"),
+                                "Minimum Units for Tier": tier.get("minimumUnits", 0),
+                                "Tier Discount (%)": tier.get("percentDiscount", 0.0)
+                            }
                             
-        #                     # Combine all dictionaries into a single record
-        #                     record = {**base_info, **flavor_info, **reservation_info, **tier_info}
+                            # Combine all dictionaries into a single record
+                            record = {**base_info, **flavor_info, **reservation_info, **tier_info}
                 
-        #         # Add resource type entry with all corresponding resources' pricing
-        #         prices[resource_type] = record
+                # Add resource type entry with all corresponding resources' pricing
+                prices[resource_type] = record
                 
-        #     else:
-        #         log.error(f"Error: {response.status_code}")
+            else:
+                log.error(f"Error: {response.status_code}")
 
         return prices
 
 
-    async def auth_web_login(realm:str, client_id:str, client_secret:str, username:str, password:str):
+    async def auth_web_login(self,
+            realm:str,
+            client_id:str,
+            client_secret:str,
+            username:str,
+            password:str
+        ):
 
         url = f"login.aruba.it/auth/realms/{realm}/protocol/openid-connect/token"
 
@@ -181,7 +189,10 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def generate_api_key(ingress_url:str, web_auth_token:str):
+    async def generate_api_key(self,
+            ingress_url:str,
+            web_auth_token:str
+        ):
 
         url = f"{ingress_url}/profile/api/v1/apikeys"
 
@@ -202,7 +213,10 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def get_client_credentials_access_token(client_id:str, client_secret:str):
+    async def get_client_credentials_access_token(self,
+            client_id:str,
+            client_secret:str
+        ):
 
         url = "login.aruba.it/auth/realms/cmp-new-apikey/protocol/openid-connect/token"
 
@@ -216,7 +230,16 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def create_project(api_gateway:str, web_auth_token:str, project_name:str):
+    async def create_project(self,
+            api_gateway:str,
+            web_auth_token:str,
+            project_name:str=None
+        ):
+        """Python implementation of Aruba Cloud API to create a project"""
+
+        if not project_name:
+            # Force default name hard-coded into API collections
+            project_name = "project-test-1"
 
         url = f"{api_gateway}/projects"
 
@@ -243,9 +266,19 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def create_vpc(api_gateway:str, project_id:str, web_auth_token:str, vpc_name:str):
+    async def create_vpc(self,
+            api_gateway:str,
+            project_id:str,
+            web_auth_token:str,
+            vpc_name:str=None
+        ):
+        """Python implementation of Aruba Cloud API to create a vpc"""
 
-        url = "{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs"
+        if not vpc_name:
+            # Force default name hard-coded into API collections
+            vpc_name = "vpc-test-1"
+
+        url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs"
 
         payload = json.dumps({
             "metadata": {
@@ -270,7 +303,18 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def create_subnet(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, subnet_name:str):
+    async def create_subnet(self,
+            api_gateway:str,
+            project_id:str,
+            web_auth_token:str,
+            vpc_id:str,
+            subnet_name:str=None
+        ):
+        """Python implementation of Aruba Cloud API to create a subnet"""
+
+        if not subnet_name:
+            # Force default name hard-coded into API collections
+            subnet_name = "subnet-api-1"
 
         url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}/subnets"
 
@@ -304,8 +348,19 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def create_security_group(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, security_group_name:str):
-        
+    async def create_security_group(self,
+            api_gateway:str,
+            project_id:str,
+            web_auth_token:str,
+            vpc_id:str,
+            security_group_name:str=None
+        ):
+        """Python implementation of Aruba Cloud API to create a security group"""
+
+        if not security_group_name:
+            # Force default name hard-coded into API collections
+            security_group_name = "sg-test-1"
+
         url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}/securityGroups"
 
         payload = json.dumps({
@@ -334,7 +389,19 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def create_security_rules(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, security_group_id:str, security_rules_name:str):
+    async def create_security_rules(self,
+            api_gateway:str,
+            project_id:str,
+            web_auth_token:str,
+            vpc_id:str,
+            security_group_id:str,
+            security_rules_name:str=None
+        ):
+        """Python implementation of Aruba Cloud API to create security rules"""
+
+        if not security_rules_name:
+            # Force default name hard-coded into API collections
+            security_rules_name = "sg-entry-rule-1"
 
         url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/vpcs/{vpc_id}/securityGroups/{security_group_id}/securityRules"
 
@@ -363,7 +430,17 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def create_elastic_ip(api_gateway:str, project_id:str, web_auth_token:str, elastic_ip_name:str):
+    async def create_elastic_ip(self,
+            api_gateway:str,
+            project_id:str,
+            web_auth_token:str,
+            elastic_ip_name:str=None
+        ):
+        """Python implementation of Aruba Cloud API to deploy an elastic ip"""
+
+        if not elastic_ip_name:
+            # Force default name hard-coded into API collections
+            elastic_ip_name = "ip-test-1"
 
         url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Network/elasticIps"
 
@@ -395,7 +472,19 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def create_kaas(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, subnet_id:str, kaas_name:str):
+    async def create_kaas(self,
+            api_gateway:str,
+            project_id:str,
+            web_auth_token:str,
+            vpc_id:str,
+            subnet_id:str,
+            kaas_name:str=None
+        ):
+        """Python implementation of Aruba Cloud API to deploy a kaas"""
+
+        if not kaas_name:
+            # Force default name hard-coded into API collections
+            kaas_name = "kaas-test-1"
 
         url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Container/kaas"
 
@@ -452,7 +541,13 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def create_key_pair(api_gateway:str, project_id:str, web_auth_token:str, key_pair_name:str):
+    async def create_key_pair(self,
+            api_gateway:str,
+            project_id:str,
+            web_auth_token:str,
+            key_pair_name:str
+        ):
+        """Python implementation of Aruba Cloud API to create a key-pair"""
 
         url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Compute/keyPairs"
 
@@ -481,7 +576,20 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def create_cloud_server(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, subnet_id:str, security_group_id:str, cloud_server_name:str):
+    async def create_cloud_server(self,
+            api_gateway:str,
+            project_id:str,
+            web_auth_token:str,
+            vpc_id:str,
+            subnet_id:str,
+            security_group_id:str,
+            cloud_server_name:str=None
+        ):
+        """Python implementation of Aruba Cloud API to deploy a cloud server"""
+
+        if not cloud_server_name:
+            # Force default name hard-coded into API collections
+            cloud_server_name = "cloud-server-1-win"
 
         url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Compute/cloudServers"
 
@@ -530,7 +638,21 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def create_cloud_server_ubuntu(api_gateway:str, project_id:str, web_auth_token:str, vpc_id:str, subnet_id:str, security_group_id:str, key_pair_id:str, cloud_server_name:str):
+    async def create_cloud_server_ubuntu(self,
+            api_gateway:str,
+            project_id:str,
+            web_auth_token:str,
+            vpc_id:str,
+            subnet_id:str,
+            security_group_id:str,
+            key_pair_id:str,
+            cloud_server_name:str=None
+        ):
+        """Python implementation of Aruba Cloud API to deploy ubuntu cloud server"""
+
+        if not cloud_server_name:
+            # Force default name hard-coded into API collections
+            cloud_server_name = "cloud-server-2-ubuntu"
 
         url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Compute/cloudServers"
 
@@ -590,7 +712,17 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def create_block_storage(api_gateway:str, project_id:str, web_auth_token:str, block_storage_name:str):
+    async def create_block_storage(self,
+            api_gateway:str,
+            project_id:str,
+            web_auth_token:str,
+            block_storage_name:str=None
+        ):
+        """Python implementation of Aruba Cloud API to deploy block storage"""
+
+        if not block_storage_name:
+            # Force default name hard-coded into API collections
+            block_storage_name = "volume-1"
 
         url = f"{api_gateway}/projects/{project_id}/providers/Aruba.Storage/blockStorages"
 
@@ -621,22 +753,167 @@ class CoreService(WampComponent):
         return response.text
 
 
-    async def deploy_resource(resources_to_deploy:dict) -> dict:
+    async def deploy_resources(self,
+            resources_to_deploy:list,
+            api_gateway:str,
+            web_auth_token:str,
+            project_id:str=None
+        ) -> dict:
         """
-        Returns a flattened json containing outcomes of Aruba cloud resources deployment.
+        Returns a flattened JSON structure summarizing the deployment outcomes of Aruba cloud resources.
 
+        This function processes a list of cloud resources to be deployed and returns a dictionary with the results
+        of the deployment. Each deployment's outcome is encapsulated in a flattened JSON format for easier consumption.
+
+        ----------
         Args:
-            resources_to_deploy (dict): Dict containing resources to deploy.
+            resources_to_deploy (list): A list of dictionaries, where each dictionary specifies the configuration
+            for a resource to deploy. Each dictionary must adhere to the following structure:
 
+            Example Structure:
+            [
+                {
+                    "name": str or None,  # Custom name for the resource. If None, a default name is used.
+                    "resource_name": str,  # Type of resource to deploy: 'blockdisk', 'elasticIp', 'kaas', 'cloudServer'.
+                    "flavor_name": str or None,  # Flavor or size of the resource. Optional.
+                    "os_platform": str or None,  # Operating system: 'linux' or 'windows'. Optional.
+                    "cpu": int or None,  # Number of CPUs for the resource. Optional.
+                    "ram": int or None,  # Amount of RAM in GB. Optional.
+                    "disk": int or None,  # Disk size in GB. Optional.
+                    "reservation_term": str or None,  # Term of reservation: '1 Month', '1 Year', '3 Years', or None.
+                    "tier_category": str,  # Pricing or support tier: 'Base', 'Partner', or 'Premium'.
+                    "additional_resources": dict,  # Nested dictionary with optional supplementary resource information:
+                    {
+                        "vpc_id": str or None,  # ID of the Virtual Private Cloud. Optional.
+                        "subnet_id": str or None,  # ID of the subnet. Optional.
+                        "security_group_id": str or None,  # ID of the security group. Optional.
+                        "key_pair_id": str or None  # ID of the key pair for SSH access. Optional.
+                    }
+                },
+                ...
+            ]
+
+        ------
         Returns:
-            dict: Dict containing deployment outcomes.
+            dict: A dictionary containing deployment outcomes for each resource.
+
         """
 
-        ### TODO: to implement...
-        temp = {}
+
+        # # Here it's not clear if a new project should be created
+        # _ = self.create_project(
+        #     api_gateway=api_gateway,
+        #     web_auth_token=web_auth_token,
+        #     project_name=project_id #???
+        # )
 
 
-        return temp
+        # Initialize dict to be filled by api response (per each resource)
+        messages = {}
+
+        for resource_to_deploy in resources_to_deploy:
+
+            """
+            NOTE:
+            Here-after deploy through Aruba Cloud IaaC APIs could be highly
+            customized, modifying API bodies to accept parameters like:
+                - cpu
+                - ram
+                - disk
+                - reservation_term
+                - ...
+
+            """
+
+            if resource_to_deploy["resource_name"] == "blockdisk":
+                
+                message = self.create_block_storage(
+                    api_gateway=api_gateway,
+                    project_id=project_id,
+                    web_auth_token=web_auth_token,
+                    # block_storage_name=resource_to_deploy["name"]
+                )
+
+            elif resource_to_deploy["resource_name"] == "elasticIp":
+                
+                message = self.create_elastic_ip(
+                    api_gateway=api_gateway,
+                    project_id=project_id,
+                    web_auth_token=web_auth_token,
+                    # elastic_ip_name=resource_to_deploy["name"]
+                )
+
+            elif resource_to_deploy["resource_name"] == "kaas":
+                
+                # Kaas resources require a vpc and a subnet to be already deployed
+                # and ids to be specified in the "additional_resources" sub-dict during API call
+                vpc_id = resource_to_deploy["additional_resources"]["vpc_id"]
+                subnet_id = resource_to_deploy["additional_resources"]["subnet_id"]
+
+                message = self.create_kaas(
+                    api_gateway=api_gateway,
+                    project_id=project_id,
+                    web_auth_token=web_auth_token,
+                    vpc_id=vpc_id,
+                    subnet_id=subnet_id,
+                    # block_storage_name=resource_to_deploy["name"]
+                )
+
+            elif resource_to_deploy["resource_name"] == "cloudServer":
+                
+                # cloudServer resources require a vpc, a subnet and a security_group to be already deployed
+                # and ids to be specified in the "additional_resources" sub-dict during API call
+                vpc_id = resource_to_deploy["additional_resources"]["vpc_id"]
+                subnet_id = resource_to_deploy["additional_resources"]["subnet_id"]
+                security_group_id = resource_to_deploy["additional_resources"]["security_group_id"]
+
+                if resources_to_deploy["os_platform"] == "linux":
+
+                    # Ubuntu servers also require a key-pair id
+                    key_pair_id = resource_to_deploy["additional_resources"]["key_pair_id"]
+
+                    message = self.create_cloud_server_ubuntu(
+                        api_gateway=api_gateway,
+                        project_id=project_id,
+                        web_auth_token=web_auth_token,
+                        vpc_id=vpc_id,
+                        subnet_id=subnet_id,
+                        security_group_id=security_group_id,
+                        key_pair_id=key_pair_id,
+                        # cloud_server_name=resource_to_deploy["name"]
+                    )
+
+                elif resources_to_deploy["os_platform"] == "windows":
+
+                    message = self.create_cloud_server(
+                        api_gateway=api_gateway,
+                        project_id=project_id,
+                        web_auth_token=web_auth_token,
+                        vpc_id=vpc_id,
+                        subnet_id=subnet_id,
+                        security_group_id=security_group_id,
+                        # cloud_server_name=resource_to_deploy["name"]
+                    )
+
+                else:
+
+                    error_text = f"Specified OS '{resource_to_deploy["os_platform"]}' for cloud server resource is not accepted..."
+                    log.error(error_text)
+                    messages["resource_name"] = error_text
+                    continue
+
+            else:
+
+                error_text = f"Specified resource_name '{resource_to_deploy["resource_name"]}' is not accepted..."
+                log.error(error_text)
+                messages["resource_name"] = message
+                continue
+            
+            # Fill output message from API
+            messages["resource_name"] = message
+
+
+        return messages
 
 
 
