@@ -50,6 +50,16 @@ aruba-budget-calc-be/
 └── team3-test/        # Test suite
 ```
 
+### API Gateway
+
+The API Gateway acts as a bridge between client applications and the CoreService, simplifying interactions and enabling efficient communication. It serves as the primary entry point for managing cloud resources and operations, handling user requests via a RESTful interface and relaying them to the CoreService for processing. The Gateway also handles CORS and integrates with the WAMP protocol for communication with the backend services.
+
+Built using FastAPI, the API Gateway leverages asynchronous programming to handle high volumes of requests with minimal latency.
+
+Available endpoints:
+- `pricing`: Fetches pricing details for various resource types.
+- `deploy`: Deploy resources to aruba cloud.
+
 ### Docker Build Stages
 
 The project uses a multi-stage Dockerfile that includes:
