@@ -1,8 +1,9 @@
 import { writable } from 'svelte/store';
 import type { ResourceName, ServerOptions } from '../../types';
+import { StepName } from '../../types';
 
 interface ResourceCreationState {
-	currentStep: number;
+	currentStep: StepName;
 	selectedResource?: ResourceName;
 	serverConfig?: Record<keyof ServerOptions, string | null>;
 	quantity?: number;
@@ -10,7 +11,7 @@ interface ResourceCreationState {
 }
 
 const initialState: ResourceCreationState = {
-	currentStep: 1,
+	currentStep: StepName.RESOURCETYPESELECTOR,
 	selectedResource: undefined,
 	serverConfig: undefined,
 	quantity: undefined,
@@ -25,7 +26,7 @@ export const resourceCreationActions = {
 		resourceCreation.set(initialState);
 	},
 
-	setStep: (step: number) => {
+	setStep: (step: StepName) => {
 		resourceCreation.update((state) => ({
 			...state,
 			currentStep: step

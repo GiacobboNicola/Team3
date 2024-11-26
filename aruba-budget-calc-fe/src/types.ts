@@ -1,3 +1,9 @@
+export enum StepName {
+	RESOURCETYPESELECTOR,
+	SERVERCONFIGURATOR,
+	QUANTITYRESERVATIONFORM
+}
+
 export interface PricingOption {
 	name: string;
 	discount: number;
