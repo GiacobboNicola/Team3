@@ -4,12 +4,11 @@ export interface PricingOption {
 	minUnits: number;
 }
 
-export interface Selections {
+export interface ServerOptions {
 	os: string[];
 	cpu: string[];
 	ram: string[];
 	disk: string[];
-	reservation: string[];
 }
 
 export enum ResourceName {

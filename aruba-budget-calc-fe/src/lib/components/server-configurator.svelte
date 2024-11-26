@@ -1,37 +1,44 @@
 <script lang="ts">
-	import type { Selections } from '../../types';
+	import type { ServerOptions } from '../../types';
 	import Button from './button.svelte';
+	import { resourceCreation, resourceCreationActions } from '$lib/stores/resource-creation';
 
 	interface Props {
 		onGoBack: () => void;
+		onGoNext: () => void;
 	}
 
-	let { onGoBack }: Props = $props();
+	let { onGoBack, onGoNext }: Props = $props();
 
-	const selections: Selections = {
+	const selections: ServerOptions = {
 		os: ['Windows', 'Linux'],
 		cpu: ['2', '4', '8', '16'],
 		ram: ['8', '16', '32'],
-		disk: ['100GB', '240GB', '500GB'],
-		reservation: ['10', '50', '100']
+		disk: ['100GB', '240GB', '500GB']
 	};
 
-	let selectedOptions: Record<keyof Selections, string | null> = $state({
-		os: null,
-		cpu: null,
-		ram: null,
-		disk: null,
-		reservation: null
-	});
+	let selectedOptions: Record<keyof ServerOptions, string | null> = $state(
+		$resourceCreation.serverConfig || {
+			os: null,
+			cpu: null,
+			ram: null,
+			disk: null
+		}
+	);
 
-	function updateSelection(category: keyof Selections, value: string | null) {
+	function updateSelection(category: keyof ServerOptions, value: string | null) {
 		selectedOptions[category] = value;
+		resourceCreationActions.setServerConfig(selectedOptions);
+	}
+
+	function allOptionsSelected(): boolean {
+		return Object.values(selectedOptions).every((option) => option !== null);
 	}
 </script>
 
 <div class="configuration">
 	<h2 class="mb-8 text-center text-2xl font-bold text-primary">Configure Your Resource</h2>
-	<div class="grid gap-4 md:grid-cols-5">
+	<div class="grid gap-4 md:grid-cols-4">
 		{#each Object.entries(selections) as [category, options]}
 			<div class="rounded-lg bg-white p-4 shadow-md">
 				<h3 class="mb-4 text-center text-blue-600">{category.toUpperCase()}</h3>
@@ -43,10 +50,10 @@
 								: 'bg-white text-primary'} cursor-pointer rounded border border-primary p-2 transition-all duration-300 hover:bg-primary hover:text-white"
 							onclick={() => {
 								if (selectedOptions[category as keyof typeof selectedOptions] === option) {
-									updateSelection(category as keyof Selections, null);
+									updateSelection(category as keyof ServerOptions, null);
 									return;
 								}
-								updateSelection(category as keyof Selections, option);
+								updateSelection(category as keyof ServerOptions, option);
 							}}
 						>
 							{option}
@@ -56,5 +63,8 @@
 			</div>
 		{/each}
 	</div>
-	<Button onClick={onGoBack} label="Back" class="mt-4" />
+	<div class="mt-4 flex justify-between">
+		<Button onClick={onGoBack} label="Back" />
+		<Button onClick={onGoNext} label="Next" disabled={!allOptionsSelected()} />
+	</div>
 </div>

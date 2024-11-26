@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/button.svelte';
 	import { selectedResources } from '$lib/stores';
-	import { setContext } from 'svelte';
 
 	const userResources = $selectedResources;
 </script>
@@ -18,6 +17,6 @@
 		{/each}
 	{/if}
 	<div class="flex justify-center">
-		<Button label="Add new resource" onClick={() => goto('/addresource')} />
+		<Button label="Add new resource" onClick={() => goto('/calculation/addresource')} />
 	</div>
 </main>

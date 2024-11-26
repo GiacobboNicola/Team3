@@ -1,3 +1,7 @@
+<script>
+	import { goto } from '$app/navigation';
+</script>
+
 <div class="flex min-h-screen items-center justify-center bg-primary">
 	<div class="w-full max-w-md space-y-6 rounded-lg bg-white p-8 shadow-lg">
 		<!-- Header -->
@@ -50,6 +54,7 @@
 			<!-- Submit Button -->
 			<div>
 				<button
+					onclick={() => goto('/calculation/cart')}
 					type="submit"
 					class="flex w-full justify-center rounded-md border border-transparent bg-input px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 				>
