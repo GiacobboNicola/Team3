@@ -11,15 +11,15 @@
 	let { onGoBack, onGoNext }: Props = $props();
 
 	const selections: ServerOptions = {
-		os: ['Windows', 'Linux'],
-		cpu: ['2', '4', '8', '16'],
-		ram: ['8', '16', '32'],
-		disk: ['100GB', '240GB', '500GB']
+		osPlatform: ['Linux'],
+		cpu: ['8', '12', '16', '32'],
+		ram: ['16', '32', '48', '64'],
+		disk: ['40', '80', '120']
 	};
 
 	let selectedOptions: Record<keyof ServerOptions, string | null> = $state(
 		$resourceCreation.serverConfig || {
-			os: null,
+			osPlatform: null,
 			cpu: null,
 			ram: null,
 			disk: null
@@ -37,17 +37,19 @@
 </script>
 
 <div class="configuration">
-	<h2 class="mb-8 text-center text-2xl font-bold text-primary">Configure Your Resource</h2>
+	<h2 class="text-primary mb-8 text-center text-2xl font-bold">Configure Your Resource</h2>
 	<div class="grid gap-4 md:grid-cols-4">
 		{#each Object.entries(selections) as [category, options]}
 			<div class="rounded-lg bg-white p-4 shadow-md">
-				<h3 class="mb-4 text-center text-blue-600">{category.toUpperCase()}</h3>
+				<h3 class="mb-4 text-center text-blue-600">
+					{category === 'osPlatform' ? 'OS' : category.toUpperCase()}
+				</h3>
 				<div class="flex flex-col gap-2">
 					{#each options as option}
 						<button
 							class="{selectedOptions[category as keyof typeof selectedOptions] === option
 								? 'bg-primary text-white'
-								: 'bg-white text-primary'} cursor-pointer rounded border border-primary p-2 transition-all duration-300 hover:bg-primary hover:text-white"
+								: 'text-primary bg-white'} border-primary hover:bg-primary cursor-pointer rounded border p-2 transition-all duration-300 hover:text-white"
 							onclick={() => {
 								if (selectedOptions[category as keyof typeof selectedOptions] === option) {
 									updateSelection(category as keyof ServerOptions, null);
@@ -56,7 +58,7 @@
 								updateSelection(category as keyof ServerOptions, option);
 							}}
 						>
-							{option}
+							{option}{(category as keyof ServerOptions) === 'disk' ? 'GB' : ''}
 						</button>
 					{/each}
 				</div>

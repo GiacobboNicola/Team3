@@ -2,6 +2,7 @@
 	import Button from './button.svelte';
 	import { resourceCreation, resourceCreationActions } from '$lib/stores/resource-creation';
 	import { cartActions } from '$lib/stores/cart';
+	import { getPricingDetails } from '$lib/utils/calculation';
 
 	interface Props {
 		onGoBack: () => void;
@@ -19,24 +20,31 @@
 		resourceCreationActions.setPeriod(selectedPeriod);
 	});
 
-	const periods = [
-		{ id: '1month', label: '1 Month' },
-		{ id: '1year', label: '1 Year' },
-		{ id: '3years', label: '3 Years' }
-	];
+	const periods = [{ label: '1 Month' }, { label: '1 Year' }, { label: '3 Years' }];
 
 	function handleConfirm() {
+		const pricingDetails = getPricingDetails({
+			reservationTerm: selectedPeriod || periods[0].label,
+			tierCategory: 'Partner',
+			osPlatform: $resourceCreation.serverConfig?.osPlatform || '',
+			cpu: $resourceCreation.serverConfig?.cpu || '',
+			ram: $resourceCreation.serverConfig?.ram || '',
+			disk: $resourceCreation.serverConfig?.disk || ''
+		});
 		cartActions.addItem({
 			resourceType: $resourceCreation.selectedResource!,
 			serverConfig: $resourceCreation.serverConfig,
 			quantity: quantity,
-			period: selectedPeriod
+			period: selectedPeriod,
+			price: pricingDetails.price
 		});
+
 		onGoNext();
 	}
 </script>
 
 <h2 class="text-primary mb-8 text-center text-2xl font-bold">Select The Quantity You Need</h2>
+<p>Minimum 50 units for Partners</p>
 <input
 	type="number"
 	bind:value={quantity}
@@ -50,11 +58,11 @@
 	{#each periods as period}
 		<button
 			class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 bg-white p-6 transition-all duration-300
-            {selectedPeriod !== period.id ? 'hover:shadow-lg' : ''}
-            {selectedPeriod === period.id
+            {selectedPeriod !== period.label ? 'hover:shadow-lg' : ''}
+            {selectedPeriod === period.label
 				? 'border-primary bg-primary border-2 shadow-xl'
 				: 'border-gray-200'}"
-			onclick={() => (selectedPeriod = selectedPeriod === period.id ? '' : period.id)}
+			onclick={() => (selectedPeriod = selectedPeriod === period.label ? '' : period.label)}
 		>
 			<span class="text-lg font-semibold">{period.label}</span>
 		</button>

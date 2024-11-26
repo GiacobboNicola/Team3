@@ -7,13 +7,14 @@ interface CartItem {
 	serverConfig?: Record<keyof ServerOptions, string | null>;
 	quantity: number;
 	period: string;
+	price: number;
 }
 
 export const cart = writable<CartItem[]>([]);
 
 export const cartActions = {
 	addItem: (item: Omit<CartItem, 'id'>) => {
-		cart.update((items) => [...items, { ...item, id: crypto.randomUUID() }]);
+		cart.update((items) => [...items, { ...item, id: crypto.randomUUID(), price: item.price }]);
 	},
 
 	removeItem: (id: string) => {

@@ -6,19 +6,20 @@
 	import { cart, cartActions } from '$lib/stores/cart';
 	import { resourceCreationActions } from '$lib/stores/resource-creation';
 	import { ResourceName } from '../../../types';
+	import type { ServerOptions } from '../../../types';
 
 	const pjName: string = $derived($projectName);
 
-	function getResourceTitle(resourceType: ResourceName): string {
+	function getResourceContent(resourceType: ResourceName): { name: string; image: string } {
 		switch (resourceType) {
 			case ResourceName.CONTAINER:
-				return 'Aruba Managed Kubernetes';
+				return { name: 'Aruba Managed Kubernetes', image: '/images/kube.svg' };
 			case ResourceName.DISK:
-				return 'Block Storage';
+				return { name: 'Block Storage', image: '/images/storage.svg' };
 			case ResourceName.COMPUTING:
-				return 'Cloud Server';
+				return { name: 'Cloud Server', image: '/images/cloud.svg' };
 			case ResourceName.NETWORKING:
-				return 'Networking';
+				return { name: 'Networking', image: '/images/network.svg' };
 		}
 	}
 
@@ -50,42 +51,55 @@
 			<div class="space-y-4">
 				{#each $cart as item}
 					<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-md">
-						<div class="flex items-center justify-between">
-							<h3 class="text-primary text-xl font-semibold">
-								{getResourceTitle(item.resourceType)}
-							</h3>
-							<div class="space-x-2">
-								<button
-									class="rounded-md bg-blue-100 px-3 py-1 text-blue-600 hover:bg-blue-200"
-									onclick={() => handleModify(item.id)}
-								>
-									Modify
-								</button>
-								<button
-									class="rounded-md bg-red-100 px-3 py-1 text-red-600 hover:bg-red-200"
-									onclick={() => cartActions.removeItem(item.id)}
-								>
-									Delete
-								</button>
-							</div>
-						</div>
+						<div>
+							<div class="flex items-center justify-between">
+								<div class="flex items-center">
+									<img
+										width={50}
+										height={50}
+										src={getResourceContent(item.resourceType).image}
+										alt="resource type"
+									/>
 
-						<div class="mt-4 grid grid-cols-2 gap-4 text-gray-600 md:grid-cols-4">
-							{#if item.serverConfig}
-								{#each Object.entries(item.serverConfig) as [key, value]}
-									<div>
-										<span class="font-medium uppercase">{key}:</span>
-										{value}
-									</div>
-								{/each}
-							{/if}
-							<div>
-								<span class="font-medium">Quantity:</span>
-								{item.quantity}
+									<h3 class="text-primary ml-2 text-xl font-semibold">
+										{getResourceContent(item.resourceType).name}
+									</h3>
+								</div>
+
+								<div class="space-x-2">
+									<button
+										class="rounded-md bg-blue-100 px-3 py-1 text-blue-600 hover:bg-blue-200"
+										onclick={() => handleModify(item.id)}
+									>
+										Modify
+									</button>
+									<button
+										class="rounded-md bg-red-100 px-3 py-1 text-red-600 hover:bg-red-200"
+										onclick={() => cartActions.removeItem(item.id)}
+									>
+										Delete
+									</button>
+								</div>
 							</div>
-							<div>
-								<span class="font-medium">Period:</span>
-								{item.period}
+
+							<div class="mt-4 grid grid-cols-2 gap-4 text-gray-600 md:grid-cols-4">
+								{#if item.serverConfig && (item.resourceType === ResourceName.CONTAINER || item.resourceType === ResourceName.COMPUTING)}
+									{#each Object.entries(item.serverConfig) as [key, value]}
+										<div>
+											<span class="font-medium uppercase">{key === 'osPlatform' ? 'OS' : key}:</span
+											>
+											{value}{(key as keyof ServerOptions) === 'disk' ? 'GB' : ''}
+										</div>
+									{/each}
+								{/if}
+								<div>
+									<span class="font-medium">Quantity:</span>
+									{item.quantity}
+								</div>
+								<div>
+									<span class="font-medium">Period:</span>
+									{item.period}
+								</div>
 							</div>
 						</div>
 					</div>

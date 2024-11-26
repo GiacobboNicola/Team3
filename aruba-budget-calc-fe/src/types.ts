@@ -11,7 +11,7 @@ export interface PricingOption {
 }
 
 export interface ServerOptions {
-	os: string[];
+	osPlatform: string[];
 	cpu: string[];
 	ram: string[];
 	disk: string[];
@@ -29,7 +29,7 @@ export interface Resource {
 	name: ResourceName;
 	hourlyPrice?: number;
 	flavorId?: string;
-	os?: string[] | undefined;
+	osPlatform?: string[] | undefined;
 	reservationPrice?: {
 		month: {
 			base: number;

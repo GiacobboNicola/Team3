@@ -8,6 +8,7 @@ interface ResourceCreationState {
 	serverConfig?: Record<keyof ServerOptions, string | null>;
 	quantity?: number;
 	period?: string;
+	price?: number;
 }
 
 const initialState: ResourceCreationState = {
@@ -15,7 +16,8 @@ const initialState: ResourceCreationState = {
 	selectedResource: undefined,
 	serverConfig: undefined,
 	quantity: undefined,
-	period: undefined
+	period: undefined,
+	price: 0
 };
 
 export const resourceCreation = writable<ResourceCreationState>(initialState);
@@ -50,14 +52,21 @@ export const resourceCreationActions = {
 	setQuantity: (quantity: number) => {
 		resourceCreation.update((state) => ({
 			...state,
-			quantity: quantity
+			quantity
 		}));
 	},
 
 	setPeriod: (period: string) => {
 		resourceCreation.update((state) => ({
 			...state,
-			period: period
+			period
+		}));
+	},
+
+	setPrice: (price: number) => {
+		resourceCreation.update((state) => ({
+			...state,
+			price
 		}));
 	}
 };
