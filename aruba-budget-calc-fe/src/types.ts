@@ -18,6 +18,13 @@ export enum ResourceName {
 	COMPUTING = 'computing'
 }
 
+export enum StepName {
+	INITIALGRID=1,
+	CONFIGURESERVER,
+	NAMEPROJECT,
+	QUANTITY,
+}
+
 export interface Resource {
 	id: string;
 	name: ResourceName;

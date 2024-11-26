@@ -3,31 +3,31 @@
 	import ResourceTypeSelector from '$lib/components/resource-type-selector.svelte';
 	import ServerConfigurator from '$lib/components/server-configurator.svelte';
 	import { resourceCreation, resourceCreationActions } from '$lib/stores/resource-creation';
-	import { ResourceName } from '../../../types';
+	import { ResourceName, StepName } from '../../../types';
 
 	function goToNextStep(resource: ResourceName | undefined) {
-		if ($resourceCreation.currentStep === 1) {
+		if ($resourceCreation.currentStep === StepName.INITIALGRID) {
 			resourceCreationActions.setResource(resource!);
 			if (resource === ResourceName.CONTAINER || resource === ResourceName.COMPUTING) {
-				resourceCreationActions.setStep(2);
+				resourceCreationActions.setStep(StepName.CONFIGURESERVER);
 			} else {
-				resourceCreationActions.setStep(3);
+				resourceCreationActions.setStep(StepName.QUANTITY);
 			}
-		} else if ($resourceCreation.currentStep === 2) {
-			resourceCreationActions.setStep(3);
+		} else if ($resourceCreation.currentStep === StepName.CONFIGURESERVER) {
+			resourceCreationActions.setStep(StepName.QUANTITY);
 		}
 	}
 
 	const goToPreviousStep = () => {
-		if ($resourceCreation.currentStep === 3) {
+		if ($resourceCreation.currentStep === StepName.QUANTITY) {
 			if ($resourceCreation.selectedResource === ResourceName.CONTAINER || 
 				$resourceCreation.selectedResource === ResourceName.COMPUTING) {
-				resourceCreationActions.setStep(2);
+				resourceCreationActions.setStep(StepName.CONFIGURESERVER);
 			} else {
-				resourceCreationActions.setStep(1);
+				resourceCreationActions.setStep(StepName.INITIALGRID);
 			}
-		} else if ($resourceCreation.currentStep === 2) {
-			resourceCreationActions.setStep(1);
+		} else if ($resourceCreation.currentStep === StepName.CONFIGURESERVER) {
+			resourceCreationActions.setStep(StepName.INITIALGRID);
 		}
 	};
 
@@ -38,19 +38,19 @@
 </script>
 
 <main class="container mx-auto mt-16 max-w-7xl px-8 py-16">
-	{#if $resourceCreation.currentStep === 1}
+	{#if $resourceCreation.currentStep === StepName.INITIALGRID}
 		<ResourceTypeSelector 
 			selectedResource={$resourceCreation.selectedResource} 
 			onGoNext={goToNextStep} 
 		/>
-	{:else if $resourceCreation.currentStep === 2 && 
+	{:else if $resourceCreation.currentStep === StepName.CONFIGURESERVER && 
 			($resourceCreation.selectedResource === ResourceName.CONTAINER || 
 			 $resourceCreation.selectedResource === ResourceName.COMPUTING)}
 		<ServerConfigurator 
 			onGoBack={goToPreviousStep} 
 			onGoNext={() => goToNextStep($resourceCreation.selectedResource)} 
 		/>
-	{:else if $resourceCreation.currentStep === 3}
+	{:else if $resourceCreation.currentStep === StepName.QUANTITY}
 		<QuantityReservationForm 
 			onGoBack={goToPreviousStep} 
 			onGoNext={() => goToNextStep($resourceCreation.selectedResource)} 

@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { ResourceName, ServerOptions } from '../../types';
+import { StepName, type ResourceName, type ServerOptions } from '../../types';
 
 interface ResourceCreationState {
 	currentStep: number;
@@ -10,7 +10,7 @@ interface ResourceCreationState {
 }
 
 const initialState: ResourceCreationState = {
-	currentStep: 1,
+	currentStep: StepName.INITIALGRID,
 	selectedResource: undefined,
 	serverConfig: undefined,
 	quantity: undefined,
