@@ -1,0 +1,88 @@
+{
+    "projects": [
+        {
+            "id": 1,
+            "name": "Project Alpha",
+            "resources": {
+                "disk": {
+                    "reservation": {
+                        "quantita": 500,
+                        "periodo": "1 mese"
+                    },
+                    "dimensione": 1000
+                },
+                "networking": {
+                    "reservation": {
+                        "quantita": 100,
+                        "periodo": "1 anno"
+                    },
+                    "enabled": true
+                },
+                "container": {
+                    "reservation": {
+                        "quantita": 3,
+                        "periodo": "3 anni"
+                    },
+                    "nome": "Web App",
+                    "os": "Linux",
+                    "cpu": 4,
+                    "ram": 8,
+                    "disk": 100
+                },
+                "computing": {
+                    "reservation": {
+                        "quantita": 2,
+                        "periodo": "1 anno"
+                    },
+                    "nome": "Compute Server",
+                    "os": "Ubuntu",
+                    "cpu": 8,
+                    "ram": 32,
+                    "disk": 500
+                }
+            }
+        },
+        {
+            "id": 2,
+            "name": "Project Beta",
+            "resources": {
+                "disk": {
+                    "reservation": {
+                        "quantita": 300,
+                        "periodo": "1 anno"
+                    },
+                    "dimensione": 500
+                },
+                "networking": {
+                    "reservation": {
+                        "quantita": 50,
+                        "periodo": "3 anni"
+                    },
+                    "enabled": false
+                },
+                "container": {
+                    "reservation": {
+                        "quantita": 2,
+                        "periodo": "3 anni"
+                    },
+                    "nome": "Backend Service",
+                    "os": "Windows",
+                    "cpu": 2,
+                    "ram": 4,
+                    "disk": 200
+                },
+                "computing": {
+                    "reservation": {
+                        "quantita": 4,
+                        "periodo": "2 anni"
+                    },
+                    "nome": "AI Model Training",
+                    "os": "Ubuntu",
+                    "cpu": 16,
+                    "ram": 64,
+                    "disk": 2000
+                }
+            }
+        }
+    ]
+}
