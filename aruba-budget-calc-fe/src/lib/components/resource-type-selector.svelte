@@ -6,10 +6,11 @@
 
 	interface Props {
 		selectedResource?: ResourceName;
+		onGoBack: (selectedResource: ResourceName) => void;
 		onGoNext: (selectedResource: ResourceName) => void;
 	}
 
-	let { selectedResource, onGoNext }: Props = $props();
+	let { selectedResource, onGoBack, onGoNext }: Props = $props();
 
 	type ResourceButton = {
 		name: ResourceName;
@@ -79,10 +80,7 @@
 		{/each}
 	</div>
 	<div class="mt-4 flex justify-between">
-		<Button
-			onClick={() => goto("/calculation/cart")}
-			label="Cancel"
-		/>
+		<Button onClick={() => selectedResource && onGoBack(selectedResource)} label="Back" />
 		<Button
 			onClick={() => selectedResource && onGoNext(selectedResource)}
 			label="Next"

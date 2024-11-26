@@ -7,14 +7,16 @@ interface ResourceCreationState {
 	serverConfig?: Record<keyof ServerOptions, string | null>;
 	quantity?: number;
 	period?: string;
+	projectName?: string;
 }
 
 const initialState: ResourceCreationState = {
-	currentStep: StepName.INITIALGRID,
+	currentStep: StepName.PROJECTNAMEFORM,
 	selectedResource: undefined,
 	serverConfig: undefined,
 	quantity: undefined,
-	period: undefined
+	period: undefined,
+	projectName: undefined
 };
 
 export const resourceCreation = writable<ResourceCreationState>(initialState);
@@ -57,6 +59,13 @@ export const resourceCreationActions = {
 		resourceCreation.update((state) => ({
 			...state,
 			period: period
+		}));
+	},
+
+	setProjectName: (projectName: string) => {
+		resourceCreation.update((state) => ({
+			...state,
+			projectName: projectName
 		}));
 	}
 };
