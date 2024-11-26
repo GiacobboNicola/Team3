@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Button from './button.svelte';
 	import { resourceCreation, resourceCreationActions } from '$lib/stores/resource-creation';
+	import { cartActions } from '$lib/stores/cart';
 
 	interface Props {
 		onGoBack: () => void;
@@ -23,25 +24,35 @@
 		{ id: '1year', label: '1 Year' },
 		{ id: '3years', label: '3 Years' }
 	];
+
+	function handleConfirm() {
+		cartActions.addItem({
+			resourceType: $resourceCreation.selectedResource!,
+			serverConfig: $resourceCreation.serverConfig,
+			quantity: quantity,
+			period: selectedPeriod
+		});
+		onGoNext();
+	}
 </script>
 
-<h2 class="mb-8 text-center text-2xl font-bold text-primary">Select The Quantity You Need</h2>
+<h2 class="text-primary mb-8 text-center text-2xl font-bold">Select The Quantity You Need</h2>
 <input
 	type="number"
 	bind:value={quantity}
 	min={MINIMUM_QUANTITY.toString()}
 	max="9999"
-	class="rounded-custom shadow-custom mt-1 block w-full border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none focus:ring-primary"
+	class="rounded-custom shadow-custom focus:border-primary focus:ring-primary mt-1 block w-full border border-gray-300 px-3 py-2 focus:outline-none"
 />
 
-<h2 class="mb-4 mt-8 text-center text-2xl font-bold text-primary">Reservation Period</h2>
+<h2 class="text-primary mb-4 mt-8 text-center text-2xl font-bold">Reservation Period</h2>
 <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 	{#each periods as period}
 		<button
 			class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 bg-white p-6 transition-all duration-300
             {selectedPeriod !== period.id ? 'hover:shadow-lg' : ''}
             {selectedPeriod === period.id
-				? 'border-2 border-primary bg-primary shadow-xl'
+				? 'border-primary bg-primary border-2 shadow-xl'
 				: 'border-gray-200'}"
 			onclick={() => (selectedPeriod = selectedPeriod === period.id ? '' : period.id)}
 		>
@@ -52,5 +63,5 @@
 
 <div class="mt-4 flex justify-between">
 	<Button onClick={onGoBack} label="Back" />
-	<Button onClick={onGoNext} label="Next" disabled={!selectedPeriod} />
+	<Button onClick={handleConfirm} label="Confirm" disabled={!selectedPeriod} />
 </div>

@@ -1,15 +1,16 @@
 <script lang="ts">
 	import Button from './button.svelte';
-	import { addResource } from '$lib/stores';
 	import { ResourceName } from '../../types';
 	import { goto } from '$app/navigation';
+	import { resourceCreation, resourceCreationActions } from '$lib/stores/resource-creation';
 
 	interface Props {
-		selectedResource?: ResourceName;
 		onGoNext: (selectedResource: ResourceName) => void;
 	}
 
-	let { selectedResource, onGoNext }: Props = $props();
+	let { onGoNext }: Props = $props();
+
+	const selectedResource = $derived($resourceCreation.selectedResource);
 
 	type ResourceButton = {
 		name: ResourceName;
@@ -50,19 +51,19 @@
 	];
 
 	function selectResource(resource: ResourceButton) {
-		selectedResource = selectedResource === resource.name ? undefined : resource.name;
+		resourceCreationActions.setResource(resource.name);
 	}
 </script>
 
 <div class="text-center">
-	<h2 class="mb-8 text-center text-2xl font-bold text-primary">Select Your Resource</h2>
+	<h2 class="text-primary mb-8 text-center text-2xl font-bold">Select Your Resource</h2>
 	<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 		{#each resources as resource}
 			<button
 				class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 bg-white p-6 transition-all duration-300
              {selectedResource !== resource.name ? 'hover:shadow-lg' : ''}
              {selectedResource === resource.name
-					? 'border-2 border-primary bg-primary text-white shadow-xl'
+					? 'border-primary bg-primary border-2 text-white shadow-xl'
 					: 'border-gray-200'}"
 				onclick={() => selectResource(resource)}
 			>
@@ -73,16 +74,13 @@
 					style:width="85px"
 					class="mb-4"
 				/>
-				<h2 class="mb-2 text-lg font-semibold text-primary">{resource.title}</h2>
+				<h2 class="text-primary mb-2 text-lg font-semibold">{resource.title}</h2>
 				<p class="text-gray-700">{resource.description}</p>
 			</button>
 		{/each}
 	</div>
 	<div class="mt-4 flex justify-between">
-		<Button
-			onClick={() => goto("/calculation/cart")}
-			label="Cancel"
-		/>
+		<Button onClick={() => goto('/calculation/cart')} label="Cancel" />
 		<Button
 			onClick={() => selectedResource && onGoNext(selectedResource)}
 			label="Next"

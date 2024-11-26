@@ -4,24 +4,36 @@
 	import ServerConfigurator from '$lib/components/server-configurator.svelte';
 	import { resourceCreation, resourceCreationActions } from '$lib/stores/resource-creation';
 	import { ResourceName } from '../../../types';
+	import { goto } from '$app/navigation';
 
-	function goToNextStep(resource: ResourceName | undefined) {
+	const selectedResource = $derived($resourceCreation.selectedResource);
+
+	function goToNextStep() {
 		if ($resourceCreation.currentStep === 1) {
-			resourceCreationActions.setResource(resource!);
-			if (resource === ResourceName.CONTAINER || resource === ResourceName.COMPUTING) {
-				resourceCreationActions.setStep(2);
-			} else {
-				resourceCreationActions.setStep(3);
+			if (selectedResource) {
+				if (
+					selectedResource === ResourceName.CONTAINER ||
+					selectedResource === ResourceName.COMPUTING
+				) {
+					resourceCreationActions.setStep(2);
+				} else {
+					resourceCreationActions.setStep(3);
+				}
 			}
 		} else if ($resourceCreation.currentStep === 2) {
 			resourceCreationActions.setStep(3);
+		} else if ($resourceCreation.currentStep === 3) {
+			resourceCreationActions.reset(); // Reset for the next resource
+			goto('/calculation/cart'); // Redirect to cart
 		}
 	}
 
 	const goToPreviousStep = () => {
 		if ($resourceCreation.currentStep === 3) {
-			if ($resourceCreation.selectedResource === ResourceName.CONTAINER || 
-				$resourceCreation.selectedResource === ResourceName.COMPUTING) {
+			if (
+				$resourceCreation.selectedResource === ResourceName.CONTAINER ||
+				$resourceCreation.selectedResource === ResourceName.COMPUTING
+			) {
 				resourceCreationActions.setStep(2);
 			} else {
 				resourceCreationActions.setStep(1);
@@ -30,30 +42,14 @@
 			resourceCreationActions.setStep(1);
 		}
 	};
-
-	// Reset store when component is mounted
-	$: {
-		resourceCreationActions.reset();
-	}
 </script>
 
 <main class="container mx-auto mt-16 max-w-7xl px-8 py-16">
 	{#if $resourceCreation.currentStep === 1}
-		<ResourceTypeSelector 
-			selectedResource={$resourceCreation.selectedResource} 
-			onGoNext={goToNextStep} 
-		/>
-	{:else if $resourceCreation.currentStep === 2 && 
-			($resourceCreation.selectedResource === ResourceName.CONTAINER || 
-			 $resourceCreation.selectedResource === ResourceName.COMPUTING)}
-		<ServerConfigurator 
-			onGoBack={goToPreviousStep} 
-			onGoNext={() => goToNextStep($resourceCreation.selectedResource)} 
-		/>
+		<ResourceTypeSelector onGoNext={goToNextStep} />
+	{:else if $resourceCreation.currentStep === 2 && ($resourceCreation.selectedResource === ResourceName.CONTAINER || $resourceCreation.selectedResource === ResourceName.COMPUTING)}
+		<ServerConfigurator onGoBack={goToPreviousStep} onGoNext={goToNextStep} />
 	{:else if $resourceCreation.currentStep === 3}
-		<QuantityReservationForm 
-			onGoBack={goToPreviousStep} 
-			onGoNext={() => goToNextStep($resourceCreation.selectedResource)} 
-		/>
+		<QuantityReservationForm onGoBack={goToPreviousStep} onGoNext={goToNextStep} />
 	{/if}
 </main>
