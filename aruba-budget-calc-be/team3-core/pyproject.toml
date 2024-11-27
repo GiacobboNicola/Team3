@@ -1,0 +1,27 @@
+[project]
+name = "team3-core"
+dynamic = ["version"]
+description = ""
+authors = [
+    {name = "NiGia", email = "ningia.coder@gmail.com"},
+]
+dependencies = [
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.scripts]
+core_run = "team3_core.main:main"
+#core_create_tables = "team3_core.main:create_tables"
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+[tool.pdm.build]
+includes = ["team3_core"]
+
+[tool.pdm.version]
+source = "file"
+path = "team3_core/__init__.py"

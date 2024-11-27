@@ -1,0 +1,101 @@
+services:
+  core:
+    image: team3/core
+    restart: unless-stopped
+    build:
+      context: aruba-budget-calc-be
+      target: core
+      args:
+        - ENV=${ENV}
+    command: "core_run --debug --ws=$WS --realm=$REALM --db=$CRDB"
+    volumes:
+      - ./aruba-budget-calc-be/team3-core/team3_core:/app/pkgs/lib/team3_core
+      - ./aruba-budget-calc-be/team3-lib/team3_lib:/app/pkgs/lib/team3_lib
+      - ./crdb/config/users.yaml:/tmp/users.yaml
+    networks:
+      net_team3:
+
+  api:
+    image: team3/api
+    restart: unless-stopped
+    build:
+      context: aruba-budget-calc-be
+      target: api
+      args:
+        - ENV=${ENV}
+    command: "api_run --debug --ws=$WS --realm=$REALM"
+    volumes:
+      - ./aruba-budget-calc-be/team3-api/team3_api:/app/pkgs/lib/team3_api
+      - ./aruba-budget-calc-be/team3-lib/team3_lib:/app/pkgs/lib/team3_lib
+    ports:
+      - 8001:8001
+    networks:
+      net_team3:
+
+  db:
+    image: mysql:8.4
+    environment:
+      - MYSQL_ROOT_PASSWORD=demo@1234
+      - MYSQL_DB=aruba
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=demo@1234
+      - TZ=Europe/Rome
+    restart: unless-stopped
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/dump/init.sql:/docker-entrypoint-initdb.d/dump.sql
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+    networks:
+      - net_team3
+
+  test:
+    image: team3/test
+    restart: unless-stopped
+    build:
+      context: aruba-budget-calc-be
+      target: test
+      args:
+        - ENV=${ENV}
+    command: "test_run --debug --ws=$WS --realm=$REALM"
+    volumes:
+      - ./aruba-budget-calc-be/team3-test/team3_test:/app/pkgs/lib/team3_test
+      - ./aruba-budget-calc-be/team3_lib:/app/pkgs/lib/team3_lib
+    networks:
+      net_team3:
+
+  # db:
+  #   image: postgres:15.0-alpine
+  #   command:
+  #     - postgres
+  #     # NOTE:
+  #     # the following lines tell pg server to adjust the TCP keepalive settings explicitly
+  #     # instead of reading from the container default, which is likely idle=7200 (seconds).
+  #     # The default value in the container is usually much larger than docker-swarm's IPVS default,
+  #     # which is 900. (And this is the culprit of the connection will be closed after ~15mins)
+  #     - -c
+  #     - 'tcp_keepalives_idle=600'
+  #     - -c
+  #     - 'tcp_keepalives_interval=30'
+  #     - -c
+  #     - 'tcp_keepalives_count=10'
+  #   environment:
+  #     - POSTGRES_USER=team3
+  #     - POSTGRES_PASSWORD=team3
+  #   ports:
+  #     - 5433:5432
+  #   volumes:
+  #     - ./runtime/postgres:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: [ "CMD-SHELL", "pg_isready -U team3" ]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - net_team3
+
+networks:
+  net_team3:
+    driver: bridge
