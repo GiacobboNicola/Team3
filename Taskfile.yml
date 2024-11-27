@@ -1,0 +1,37 @@
+version: "3"
+
+vars:
+  GREETING: Hello, World!
+
+dotenv: [".env"]
+
+tasks:
+  default:
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true
+
+  be:test:
+    desc: start the backend envirionment
+    cmds:
+      - docker compose up bondy api core test
+
+  venv:
+    desc: create venv and install mandatory packages
+    cmds:
+      - |
+        if [ -d  $DIR_ENV ]; then
+          echo "$DIR_ENV is already present"
+        else
+          python3 -m venv $DIR_ENV --prompt team3
+        fi
+        $DIR_ENV/bin/pip install -r requirements.txt
+        $DIR_ENV/bin/pip install -e ./aruba-budget-calc-be/team3-lib
+        $DIR_ENV/bin/pip install -e ./aruba-budget-calc-be/team3-core
+        $DIR_ENV/bin/pip install -e ./aruba-budget-calc-be/team3-api
+      - task: git:hooks
+
+  git:hooks:
+    desc: install pre-commit
+    cmds:
+      - "$DIR_ENV/bin/pre-commit install --hook-type pre-commit --hook-type pre-merge-commit --hook-type post-merge"
