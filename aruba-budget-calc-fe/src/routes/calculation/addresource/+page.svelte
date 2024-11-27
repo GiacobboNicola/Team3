@@ -44,7 +44,7 @@
 	};
 </script>
 
-<main class="container mx-auto mt-16 max-w-7xl px-8 py-16">
+<main class="container mx-auto mt-16 max-w-7xl px-8 pt-16 pb-32">
 	{#if $resourceCreation.currentStep === StepName.RESOURCETYPESELECTOR}
 		<ResourceTypeSelector onGoNext={goToNextStep} />
 	{:else if $resourceCreation.currentStep === StepName.SERVERCONFIGURATOR && ($resourceCreation.selectedResource === ResourceName.CONTAINER || $resourceCreation.selectedResource === ResourceName.COMPUTING)}

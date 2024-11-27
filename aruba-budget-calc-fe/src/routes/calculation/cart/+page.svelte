@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/button.svelte';
+	import CartFooter from '$lib/components/cart-footer.svelte';
 	import ProjectNameForm from '$lib/components/project-name-form.svelte';
 	import { projectName } from '$lib/stores';
 	import { cart, cartActions } from '$lib/stores/cart';
@@ -88,7 +89,10 @@
 										<div>
 											<span class="font-medium uppercase">{key === 'osPlatform' ? 'OS' : key}:</span
 											>
-											{value}{(key as keyof ServerOptions) === 'disk' ? 'GB' : ''}
+											{value}{(key as keyof ServerOptions) === 'disk' ||
+											(key as keyof ServerOptions) === 'ram'
+												? 'GB'
+												: ''}
 										</div>
 									{/each}
 								{/if}
@@ -112,3 +116,6 @@
 		</div>
 	{/if}
 </main>
+{#if pjName}
+	<CartFooter />
+{/if}

@@ -3,8 +3,6 @@
 	import { cart } from '$lib/stores/cart';
 	import { derived } from 'svelte/store';
 
-	let { children } = $props();
-
 	// Calculate total hourly and monthly costs
 	const totalHourlyCost = derived(cart, ($cart) => {
 		return $cart.reduce((sum, item) => sum + item.price, 0);
@@ -15,23 +13,23 @@
 	});
 </script>
 
-{@render children()}
-
 <footer
 	class="fixed bottom-0 flex w-full items-center justify-between border-t bg-white px-8 py-4 font-bold shadow-lg"
 >
 	<div class="">
 		<div>
-			Hourly Cost: <span class="text-primary {$totalHourlyCost > 0 && 'text-black line-through'}"
-				>{$totalHourlyCost.toFixed(2)} USD</span
+			Total Hourly Cost: <span
+				class="text-primary {$totalHourlyCost > 0 && 'text-black line-through'}"
+				>{$totalHourlyCost.toFixed(2)} €</span
 			>
 			{#if $totalHourlyCost > 0}<span class="text-primary ml-1"
 					>{($totalHourlyCost - (15 / 100) * $totalHourlyCost).toFixed(2)} €</span
 				>{/if}
 		</div>
 		<div>
-			Monthly Cost: <span class="text-primary {$totalMonthlyCost > 0 && 'text-black line-through'}"
-				>{$totalMonthlyCost.toFixed(2)} USD</span
+			Total Monthly Cost: <span
+				class="text-primary {$totalMonthlyCost > 0 && 'text-black line-through'}"
+				>{$totalMonthlyCost.toFixed(2)} €</span
 			>{#if $totalMonthlyCost > 0}<span class="text-primary ml-1"
 					>{($totalMonthlyCost - (15 / 100) * $totalMonthlyCost).toFixed(2)} €</span
 				>{/if}

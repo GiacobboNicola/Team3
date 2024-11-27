@@ -2,7 +2,10 @@
 	import Button from './button.svelte';
 	import { resourceCreation, resourceCreationActions } from '$lib/stores/resource-creation';
 	import { cartActions } from '$lib/stores/cart';
-	import { getPricingDetails } from '$lib/utils/calculation';
+	import { getPriceAndMinimumUnits, getPricingDetails } from '$lib/utils/calculation';
+	import ConfigurationFooter from './configuration-footer.svelte';
+	import { onMount } from 'svelte';
+	import { ResourceName } from '../../types';
 
 	interface Props {
 		onGoBack: () => void;
@@ -10,37 +13,82 @@
 	}
 
 	let { onGoBack, onGoNext }: Props = $props();
-
+	const periods = [{ label: '1 Month' }, { label: '1 Year' }, { label: '3 Years' }];
 	const MINIMUM_QUANTITY = 50;
 	let quantity: number = $state($resourceCreation.quantity || MINIMUM_QUANTITY);
-	let selectedPeriod: string = $state($resourceCreation.period || '');
+	let selectedPeriod: string = $state($resourceCreation.period || periods[0].label);
 
 	$effect(() => {
 		resourceCreationActions.setQuantity(quantity);
 		resourceCreationActions.setPeriod(selectedPeriod);
 	});
 
-	const periods = [{ label: '1 Month' }, { label: '1 Year' }, { label: '3 Years' }];
-
 	function handleConfirm() {
-		const pricingDetails = getPricingDetails({
-			reservationTerm: selectedPeriod || periods[0].label,
-			tierCategory: 'Partner',
-			osPlatform: $resourceCreation.serverConfig?.osPlatform || '',
-			cpu: $resourceCreation.serverConfig?.cpu || '',
-			ram: $resourceCreation.serverConfig?.ram || '',
-			disk: $resourceCreation.serverConfig?.disk || ''
-		});
+		let pricingDetails;
+		if (
+			$resourceCreation.selectedResource === ResourceName.COMPUTING ||
+			$resourceCreation.selectedResource === ResourceName.CONTAINER
+		) {
+			pricingDetails = getPricingDetails({
+				reservationTerm: selectedPeriod || periods[0].label,
+				tierCategory: 'Partner',
+				osPlatform: $resourceCreation.serverConfig?.osPlatform || '',
+				cpu: $resourceCreation.serverConfig?.cpu || '',
+				ram: $resourceCreation.serverConfig?.ram || '',
+				disk: $resourceCreation.serverConfig?.disk || ''
+			}).price;
+		} else {
+			pricingDetails = getPriceAndMinimumUnits('1 Month', 'Partner').price;
+		}
 		cartActions.addItem({
 			resourceType: $resourceCreation.selectedResource!,
 			serverConfig: $resourceCreation.serverConfig,
 			quantity: quantity,
 			period: selectedPeriod,
-			price: pricingDetails.price
+			price: pricingDetails
 		});
 
 		onGoNext();
 	}
+
+	let price: number = $state(0);
+
+	const handleChange = (period: { label: string }) => {
+		selectedPeriod = selectedPeriod === period.label ? '' : period.label;
+		if (
+			$resourceCreation.selectedResource === ResourceName.COMPUTING ||
+			$resourceCreation.selectedResource === ResourceName.CONTAINER
+		) {
+			price = getPricingDetails({
+				reservationTerm: selectedPeriod,
+				tierCategory: 'Partner',
+				osPlatform: $resourceCreation.serverConfig?.osPlatform || '',
+				cpu: $resourceCreation.serverConfig?.cpu || '',
+				ram: $resourceCreation.serverConfig?.ram || '',
+				disk: $resourceCreation.serverConfig?.disk || ''
+			}).price;
+		} else {
+			price = getPriceAndMinimumUnits(period.label, 'Partner').price;
+		}
+	};
+
+	onMount(() => {
+		if (
+			$resourceCreation.selectedResource === ResourceName.COMPUTING ||
+			$resourceCreation.selectedResource === ResourceName.CONTAINER
+		) {
+			price = getPricingDetails({
+				reservationTerm: '1 Month',
+				tierCategory: 'Partner',
+				osPlatform: $resourceCreation.serverConfig?.osPlatform || '',
+				cpu: $resourceCreation.serverConfig?.cpu || '',
+				ram: $resourceCreation.serverConfig?.ram || '',
+				disk: $resourceCreation.serverConfig?.disk || ''
+			}).price;
+		} else {
+			price = getPriceAndMinimumUnits('1 Month', 'Partner').price;
+		}
+	});
 </script>
 
 <h2 class="text-primary mb-8 text-center text-2xl font-bold">Select The Quantity You Need</h2>
@@ -62,7 +110,7 @@
             {selectedPeriod === period.label
 				? 'border-primary bg-primary border-2 shadow-xl'
 				: 'border-gray-200'}"
-			onclick={() => (selectedPeriod = selectedPeriod === period.label ? '' : period.label)}
+			onclick={() => handleChange(period)}
 		>
 			<span class="text-lg font-semibold">{period.label}</span>
 		</button>
@@ -73,3 +121,5 @@
 	<Button onClick={onGoBack} label="Back" />
 	<Button onClick={handleConfirm} label="Confirm" disabled={!selectedPeriod} />
 </div>
+
+<ConfigurationFooter {price} />

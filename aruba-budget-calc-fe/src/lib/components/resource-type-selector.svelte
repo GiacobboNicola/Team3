@@ -24,28 +24,28 @@
 			name: ResourceName.CONTAINER,
 			title: 'Aruba Managed Kubernetes',
 			description:
-				"Effortlessly create and manage Kubernetes clusters with Aruba's developer-friendly platform. With an intuitive control panel, you can deploy containerized applications quickly and at scale, while ensuring robust security every step of the way.",
+				"Effortlessly create and manage Kubernetes clusters with Aruba's developer-friendly platform. With an intuitive control panel, you can deploy containerized applications quickly and at scale.",
 			image: '/images/kube.svg'
 		},
 		{
 			name: ResourceName.DISK,
 			title: 'Block Storage',
 			description:
-				'Efficiently store and manage data with our highly scalable Block Storage system. Designed for speed, secure access, and fast recovery, it ensures your data is always protected and available when you need it.',
+				'Efficiently store and manage data with our highly scalable Block Storage system. Designed for speed, secure access, and fast recovery.',
 			image: '/images/storage.svg'
 		},
 		{
 			name: ResourceName.COMPUTING,
 			title: 'Cloud Server',
 			description:
-				'Tailor your Cloud Server to your needs with flexible hourly, monthly, or yearly plans. Connect seamlessly with other Cloud Servers using Virtual Switches, and enjoy the reliability of redundant hardware. Customize components to fit your workload, and choose from multiple Hypervisor technologies to optimize your performance.',
+				'Tailor your Cloud Server to your needs with flexible hourly, monthly, or yearly plans. Connect seamlessly with other Cloud Servers using Virtual Switches, and enjoy the reliability of redundant hardware. Customize components to fit your workload.',
 			image: '/images/cloud.svg'
 		},
 		{
 			name: ResourceName.NETWORKING,
 			title: 'Networking',
 			description:
-				'Manage your cloud infrastructure with flexible networking options. Purchase dynamic IP addresses and assign them across multiple resources to ensure secure, seamless connectivity. Create isolated Virtual Private Cloud (VPC) networks to organize your cloud resources, and use custom subnets and security groups to control traffic flow and enhance network security.',
+				'Manage your cloud infrastructure with flexible networking options. Purchase dynamic IP addresses and assign them across multiple resources to ensure secure, seamless connectivity.',
 			image: '/images/network.svg'
 		}
 	];
@@ -70,8 +70,8 @@
 				<img
 					src={resource.image}
 					alt="resource"
-					style:height="85px"
-					style:width="85px"
+					style:height="65px"
+					style:width="65px"
 					class="mb-4"
 				/>
 				<h2 class="text-primary mb-2 text-lg font-semibold">{resource.title}</h2>
