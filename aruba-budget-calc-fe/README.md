@@ -22,3 +22,8 @@ npm run build
 ```
 
 You can preview the production build with `npm run preview`.
+
+## More Information
+
+For more details about the project, please refer to the [OVERVIEW.md](OVERVIEW.md) file.
+
