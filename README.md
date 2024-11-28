@@ -11,7 +11,7 @@ Il progetto ABC è un prototipo di un servizio pensato per assistere i clienti d
 - Python 3.12
 - PDM (Python dependency manager)
 - FastAPI (for API endpoints)
-- MySQL
+- Redis
 
 ### Frontend Stack
 
@@ -30,7 +30,7 @@ Il progetto ABC è un prototipo di un servizio pensato per assistere i clienti d
 
 - Python 3.12 or higher
 - PDM (Python dependency manager)
-- MySQL Server
+- Redis
 
 ### Frontend Requirements
 
