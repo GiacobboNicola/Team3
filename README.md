@@ -1,5 +1,7 @@
 # Team3
 
+Il progetto ABC è un prototipo di un servizio pensato per assistere i clienti di Aruba nel calcolo del budget per i loro progetti basati sul cloud. Tramite l'interfaccia web l'utente è in grado di configurare le risorse che vuole allocare sui propri progetti (container, cloud computing, storage e networking) **fornendo informazioni sui prezzi in tempo reale**. Inoltre l'applicazione consentirà agli utenti di passare, senza interruzioni, dalla stima dei costi all'effettivo ordine e deploy delle risorse.
+
 ## Technology Stack
 
 - Docker & Docker Compose
